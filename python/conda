@@ -1,0 +1,20 @@
+https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+
+conda create -n your_env_name python=X.X
+
+conda env list
+conda create --name py3.6 python=3.6 
+
+
+add cn source
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --set show_channel_urls yes
+conda update conda 
+
+
+恢复默认源：
+conda config --remove-key channels
+
+
+

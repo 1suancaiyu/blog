@@ -1,0 +1,3 @@
+unzip file to a new floder
+unzip [file_name] -d [dir]
+
