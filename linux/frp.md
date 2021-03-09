@@ -12,6 +12,7 @@
 #### 1.1 开放服务器端口
 #### 1.2 部署服务器端frps
 #### 1.3 编写配置文件frps.ini
+
 #### 1.4 启动服务器端服务 ./frps -c frps.ini
 
 
@@ -20,3 +21,22 @@
 #### 2.1 部署客户端fprc
 #### 2.2 编写配置文件frpc.ini
 #### 2.3 启动客户端服务 ./frpc -c frpc.ini
+
+
+frps.ini{
+[common]
+bind_port = 7000
+}
+
+
+frpc.ini{
+[common]
+server_addr =  xxx #your_custom_domain or the real public ip
+server_port = 7000
+
+[ssh]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 22
+remote_port = xxx #custom_port  
+}
