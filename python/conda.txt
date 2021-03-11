@@ -1,20 +1,30 @@
-https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+# conda
 
+[anacodna download link](https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh)
+
+## general_command 
+```
 conda create -n your_env_name python=X.X
-
 conda env list
-conda create --name py3.6 python=3.6 
-
-
-add cn source
+```
+## add cn source 
+1. vim ~/.condarc
+```
+channels:
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/main/
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+  - defaults
+show_channel_urls: true
+```
+2. command
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
 conda config --set show_channel_urls yes
+
+##### update conda 
 conda update conda 
 
-
-恢复默认源：
+# change to the default：
 conda config --remove-key channels
-
-
 
