@@ -220,6 +220,21 @@ val_data.npy
 
 ## training process
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # focus point when reading code
 1. dataset format
 2. training process

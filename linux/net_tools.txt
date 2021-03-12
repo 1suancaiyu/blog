@@ -1,7 +1,0 @@
-查看哪些端口是开放的，分别是什么进程在监听
-sudo netstat -tlpn
-# yum install net-tools     [On CentOS/RHEL]
-# apt install net-tools     [On Debian/Ubuntu]
-# zypper install net-tools  [On OpenSuse]
-# pacman -S netstat-nat     [On Arch Linux]
-
