@@ -10,3 +10,31 @@ typora
 https://typora.io/
 
 # day 2 vim
+# vim has three models:
+
+## edit 
+a 
+i
+o
+O
+
+## command
+dd # delete the line
+shift + : #enter to the command model
+w
+q
+wq
+q!
+wq!
+set number
+set nonumber
+set noh
+set hlsearch
+set nohlsearch
+
+u and ctrl r 
+
+%s/str1/star2/g # change all the str1 to str2
+
+## visual
+ctrl + v
