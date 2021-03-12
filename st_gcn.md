@@ -1,10 +1,9 @@
 # st-gcn study note
 main contribution
-1. open_pose prrporcess
+1. open_pose preporcess
 2. gcn
 3. tcn
-
-simple attentino block
+simple attention block
 
 
 ## dataset
@@ -38,9 +37,9 @@ Each clip in Kinetics lasts around 10 seconds.
 RGB to 18 joints (x,y,c) by OpenPose
 2D coordinates (x,y) and c: confidence scores
 
-?
+## ?
 For the multi-person
-cases, we select 2 people with the highest average joint confidence in each clip, if there is only one person so all stuck 0 ?
+cases, we select 2 people with the highest average joint confidence in each clip. So if there is only one person in the frame, the another pad 0 ?
 #### shape
 ```
 train_data.npy
@@ -218,23 +217,9 @@ val_data.npy
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## training flow
+## training process
 
 # focus point when reading code
 1. dataset format
-2. training flow
+2. training process
 
