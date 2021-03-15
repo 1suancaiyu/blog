@@ -10,3 +10,4 @@ typora
 https://typora.io/
 
 # day 2 vim
+

@@ -68,3 +68,9 @@ https://pypi.tuna.tsinghua.edu.cn/simple/
 http://pypi.mirrors.ustc.edu.cn/simple/
 ```
 
+Pip is not working: ImportError: No module named 'pip._internal'
+```
+python2 -m pip install --user --upgrade pip
+python3 -m pip install --user --upgrade pip
+```
+

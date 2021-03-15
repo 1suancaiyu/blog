@@ -215,14 +215,56 @@ val_data.npy
 ```
 
 
-
-
-
 ## training process
+To train a new ST-GCN model, run
+```
+python main.py recognition -c config/st_gcn/kinetics-skeleton/train.yaml --work_dir work_dir --device 0 1 2
+```
 
+but get this error
 
+error1
+```
+(stgcn) root@577b4673ae6c:~/stgcn# python main.py recognition -c config/st_gcn/kinetics-skeleton/train.yaml --work_dir work_dir --device 0 1 2
+[03.13.21|11:59:35] Parameters:
 
+[03.13.21|11:59:35] Training epoch: 0
+  warnings.warn("nn.ParameterList is being used with DataParallel but this is not "
+/root/anaconda3/envs/stgcn/lib/python3.8/site-packages/torch/nn/modules/container.py:446: UserWarning: Setting attributes on ParameterList is not supported.
+  warnings.warn("Setting attributes on ParameterList is not supported.")
+RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED
+```
+solution
+install the required version
+```
+conda install python=3.5
+conda install pytorch==0.4.0
+```
 
+environmet
+```
+conda install python=3.6
+python3 -m pip install --user --upgrade pip
+
+pip3 install sk-video
+pip3 install opencv-python
+
+```
+error2
+module 'yaml' has no attribute 'FullLoader'
+reason:
+The FullLoader class is only available in PyYAML 5.1 and later
+solution:
+```
+pip install --ignore-installed PyYAML
+```
+
+try have a training flow
+please give the absolute dir
+```
+python main.py recognition -c /root/stgcn/config/st_gcn/kinetics-skeleton/train.yaml  --work_dir work_dir
+
+```
 
 
 

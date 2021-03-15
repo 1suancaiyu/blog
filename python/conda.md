@@ -32,6 +32,8 @@ show_channel_urls: true
 4. change to the default：
 ```conda config --remove-key channels```
 
+change the current python version
+conda install python=x.x
 
 
 # pip
