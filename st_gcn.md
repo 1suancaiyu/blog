@@ -31,16 +31,34 @@ st-gcn-processed-data
 ```
 ### 1. Kinetics
 #### info
+
+```
 300,000 video clips
 400 human
 Each clip in Kinetics lasts around 10 seconds.
 
 RGB to 18 joints (x,y,c) by OpenPose
 2D coordinates (x,y) and c: confidence scores
+```
+
+datasets content
+```
+retrieved from YouTube. 
+cover as many as 400 human action classes, 
+
+ranging from daily activities, sports scenes, to complex actions with interactions.
+
+cover a broad range of classes including human-object interactions such as playing instruments, 
+as well as human-human interactions such as shaking hands. 
+```
+
+![3-Figure1-1](D:\workspace\blog\3-Figure1-1.png)
 
 ## ?
+
 For the multi-person
 cases, we select 2 people with the highest average joint confidence in each clip. So if there is only one person in the frame, the another pad 0 ?
+
 #### shape
 ```
 train_data.npy
@@ -52,6 +70,10 @@ val_data.npy
 train_label.pkl
 ([...],   # _.json * 240436]
  [...])   # number * 240436]
+ 
+ train_label.pkl
+([...],   # _.json * 19796]
+ [...])   # number * 19796]
 
 val:train  8:100
 ```
@@ -161,6 +183,7 @@ val_label[1][:10]:
 
 ### 2. NTU-RGB-D
 #### info
+```
 56,000 action clips
 60 action classes
 40 volunteers
@@ -170,6 +193,18 @@ each clip most 2 subject
 
 detected by the Kinect depth sensors
 three camera views recorded simultaneously
+```
+
+content
+```
+Our dataset contains 60 different action classes 
+including daily, mutual, and health-related actions. 
+```
+
+```
+http://rose1.ntu.edu.sg/datasets/actionrecognition.asp
+```
+![Screen_Shot_2021-01-28_at_2.19.00_PM](D:\workspace\blog\Screen_Shot_2021-01-28_at_2.19.00_PM.png)
 
 **x-sub**
 40320 train actors subset1
@@ -216,56 +251,113 @@ val_data.npy
 
 
 ## training process
-To train a new ST-GCN model, run
+
+
+### Run successfully
+final env
+```
+Python3.6.6 + Pytorch1.2.0 + cudatoolkit10.0.130 + cudnn7.6.0 + torchvision0.4.0
+```
+
+environment.yaml
+```
+name: stgcn
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - blas=1.0=mkl
+  - ca-certificates=2021.1.19=h06a4308_1
+  - certifi=2020.12.5=py36h06a4308_0
+  - cffi=1.14.5=py36h261ae71_0
+  - cuda90=1.0=h6433d27_0
+  - cudatoolkit=10.0.130=0
+  - cudnn=7.6.5=cuda10.0_0
+  - freetype=2.10.4=h5ab3b9f_0
+  - intel-openmp=2019.4=243
+  - jpeg=9b=h024ee3a_2
+  - lcms2=2.11=h396b838_0
+  - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libffi=3.3=he6710b0_2
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libgfortran-ng=7.3.0=hdf63c60_0
+  - libpng=1.6.37=hbc83047_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libtiff=4.2.0=h3942068_0
+  - libwebp-base=1.2.0=h27cfd23_0
+  - lz4-c=1.9.3=h2531618_0
+  - mkl=2018.0.3=1
+  - ncurses=6.2=he6710b0_1
+  - ninja=1.10.2=py36hff7bd54_0
+  - olefile=0.46=py36_0
+  - openssl=1.1.1j=h27cfd23_0
+  - pillow=8.1.2=py36he98fc37_0
+  - pip=21.0.1=py36h06a4308_0
+  - pycparser=2.20=py_2
+  - python=3.6.13=hdb3f193_0
+  - pytorch=1.4.0=py3.6_cuda10.0.130_cudnn7.6.3_0
+  - readline=8.1=h27cfd23_0
+  - setuptools=52.0.0=py36h06a4308_0
+  - six=1.15.0=py36h06a4308_0
+  - sqlite=3.35.1=hdfb4753_0
+  - tk=8.6.10=hbc83047_0
+  - wheel=0.36.2=pyhd3eb1b0_0
+  - xz=5.2.5=h7b6447c_0
+  - zlib=1.2.11=h7b6447c_3
+  - zstd=1.4.5=h9ceee32_0
+  - pip:
+    - argparse==1.4.0
+    - cached-property==1.5.2
+    - dataclasses==0.8
+    - h5py==3.1.0
+    - imageio==2.9.0
+    - numpy==1.19.5
+    - opencv-python==4.5.1.48
+    - pyyaml==5.4.1
+    - scikit-video==1.1.11
+    - scipy==1.5.4
+    - torch==1.8.0
+    - torchvision==0.9.0
+    - typing-extensions==3.7.4.3
+prefix: /home/wsx/anaconda3/envs/stgcn
+```
+
+error
+```
+RuntimeError: CuDNN error: CUDNN_STATUS_SUCCESS
+```
+solution
+```
+conda install cudatoolkit==10.0.130
+接着安装cudnn，直接使用conda install cudnn安装即可，它自己会选择和cuda版本对应的安装包
+最后安装Pytorch，从官网https://pytorch.org/get-started/locally/可以获得安装命令，记住cuda要选10.0的版本。得到的命令如下：conda install pytorch torchvision cudatoolkit=10.0 -c pytorch
+```
+error
+```
+RuntimeError: CUDA out of memory. Tried to allocate 352.00 MiB (GPU 0; 7.80 GiB total capacity; 6.45
+```
+solution: smaller batch_size
+
+
+
+
+bci  gpu
+
 ```
 python main.py recognition -c config/st_gcn/kinetics-skeleton/train.yaml --work_dir work_dir --device 0 1 2
 ```
-
-but get this error
-
-error1
+my gpu
 ```
-(stgcn) root@577b4673ae6c:~/stgcn# python main.py recognition -c config/st_gcn/kinetics-skeleton/train.yaml --work_dir work_dir --device 0 1 2
-[03.13.21|11:59:35] Parameters:
-
-[03.13.21|11:59:35] Training epoch: 0
-  warnings.warn("nn.ParameterList is being used with DataParallel but this is not "
-/root/anaconda3/envs/stgcn/lib/python3.8/site-packages/torch/nn/modules/container.py:446: UserWarning: Setting attributes on ParameterList is not supported.
-  warnings.warn("Setting attributes on ParameterList is not supported.")
-RuntimeError: cuDNN error: CUDNN_STATUS_NOT_INITIALIZED
-```
-solution
-install the required version
-```
-conda install python=3.5
-conda install pytorch==0.4.0
+python main.py recognition -c /home/wsx/st-gcn/config/st_gcn/kinetics-skeleton/train.yaml  --work_dir work_dir --device 0 --batch_size 10
 ```
 
-environmet
-```
-conda install python=3.6
-python3 -m pip install --user --upgrade pip
 
-pip3 install sk-video
-pip3 install opencv-python
 
-```
-error2
-module 'yaml' has no attribute 'FullLoader'
-reason:
-The FullLoader class is only available in PyYAML 5.1 and later
-solution:
-```
-pip install --ignore-installed PyYAML
-```
 
-try have a training flow
-please give the absolute dir
-```
-python main.py recognition -c /root/stgcn/config/st_gcn/kinetics-skeleton/train.yaml  --work_dir work_dir
 
-```
-
+### flow
+![image-20210316085807661](D:\workspace\blog\image-20210316085807661.png)
 
 
 
@@ -280,4 +372,31 @@ python main.py recognition -c /root/stgcn/config/st_gcn/kinetics-skeleton/train.
 # focus point when reading code
 1. dataset format
 2. training process
+
+
+
+## zhou:
+```
+week3
+两个数据格式不同的数据集，是如何区分处理的
+数据集的实际运动类型
+
+week4
+找预测最后预测最后一帧的项目代码去借鉴
+https://github.com/1suancaiyu/Locality-Awareness-SGE
+```
+
+
+
+## task
+```
+1. 先跑通任务3
+2. 将网络修改为基于st-gcn的atuo-encoder
+3. 最后实现任务1
+```
+
+![image-20210316085807661](D:\workspace\blog\image-20210316085807661.png)
+![image-20210323084825154](D:\workspace\blog\image-20210323084825154.png)
+
+
 

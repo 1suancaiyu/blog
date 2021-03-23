@@ -12,7 +12,7 @@ conda info
 ## change the source 
 1. command
 ```
-conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
 ```
 2. vim ~/.condarc
@@ -32,7 +32,10 @@ show_channel_urls: true
 4. change to the default：
 ```conda config --remove-key channels```
 
-
+remove conda env
+```
+conda env remove --name myenv
+```
 
 # pip
 ## change source
@@ -51,7 +54,9 @@ index-url = https://pypi.tuna.tsinghua.edu.cn/simple12
 ```
 ### temporal using
 ```
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+# 中科大
+pip install -i https://pypi.mirrors.ustc.edu.cn/simple/ xxx
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple xxx
 ```
 
 ### pip source list
@@ -74,3 +79,8 @@ python2 -m pip install --user --upgrade pip
 python3 -m pip install --user --upgrade pip
 ```
 
+uninstal
+```
+conda uninstall pytorch
+conda uninstall libtorch
+```

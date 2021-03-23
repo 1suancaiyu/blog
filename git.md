@@ -2,8 +2,8 @@
 command change
 ```
 git config --global core.editor vim
-git config  --global user.name 你的目标用户名；
-git config  --global user.email 你的目标邮箱名;
+git config --global user.email "wang.shuxi@outlook.com"
+git config --global user.name "wang shuxi"
 ```
 
  ~/.gitconfig

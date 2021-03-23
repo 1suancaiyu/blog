@@ -35,6 +35,11 @@ show_channel_urls: true
 change the current python version
 conda install python=x.x
 
+## rename
+```
+conda create --name new_name --clone old_name
+conda remove --name old_name --all
+```
 
 # pip
 ## change source
