@@ -101,4 +101,23 @@ get _data_KGBD()
  281         targets = targets.tolist()
 ```
 
+loss
+```
+ 683         # suancaiyu
+ 684         predicting_output = tf.identity(predicting_decoder_output.rnn_output, name='predictions')
+ 685         training_output = tf.identity(predicting_decoder_output.rnn_output, name='train_output')
+ 686
+ 687         # wsx loss
+ 688         train_loss = tf.reduce_mean(tf.nn.l2_loss(training_decoder_output - targets))
+ 689         real_loss = tf.identity(train_loss, name='real_loss')
+```
 
+targets
+```
+276     elif Model == 'prediction':
+ 277         # suancaiyu targets
+ 278         targets = np.concatenate((input_data[1:,:,:], input_data[-1,:, :].reshape([1, time_steps, series_length])), axis=0)
+ 279         # input_data = input_data[:-1]
+ 280         input_data = input_data.tolist()
+ 281         targets = targets.tolist()
+```
