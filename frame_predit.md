@@ -121,3 +121,34 @@ targets
  280         input_data = input_data.tolist()
  281         targets = targets.tolist()
 ```
+
+
+
+decoder input
+
+```
+decoder_input = process_decoder_input(targets, batch_size)
+```
+
+```
+ def get_data_KGBD(
+ 276     elif Model == 'prediction':
+ 277         # suancaiyu targets
+ 278         targets = np.concatenate((input_data[1:,:,:], input_data[-1,:, :].reshape([1, time_steps, series_length])), axis=0)
+ 279         # input_data = input_data[:-1]
+ 280         input_data = input_data.tolist()
+ 281         targets = targets.tolist()
+
+```
+
+```
+ 593 # suancaiyu
+ 594 # so for all the three pre_task the input data is 1,,f-1?
+ 595 def process_decoder_input(data, batch_size):
+ 596     '''
+ 597     transform the target sequence (1,2,3,...,f) to (Z,1,2,3,...,f-1) as input to decoder in training
+ 598     '''
+ 599     ending = tf.strided_slice(data, [0, 0, 0], [batch_size, -1, series_length], [1, 1, 1])
+ 600     decoder_input = tf.concat([tf.fill([batch_size, time_steps, series_length], 0.), ending], 1)
+ 601     return decoder_input
+```
