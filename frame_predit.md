@@ -152,3 +152,282 @@ decoder_input = process_decoder_input(targets, batch_size)
  600     decoder_input = tf.concat([tf.fill([batch_size, time_steps, series_length], 0.), ending], 1)
  601     return decoder_input
 ```
+
+
+## run the project
+
+datasets
+```
+BIWI_IAS_KGBD
+├── BIWI
+│   ├── 10
+│   │   ├── BIWI_test_npy_data
+│   │   │   ├── frame_id_BIWI_10.npy
+│   │   │   ├── ids_BIWI_10.npy
+│   │   │   ├── t_source_x_BIWI_10.npy
+│   │   │   ├── t_source_y_BIWI_10.npy
+│   │   │   ├── t_source_z_BIWI_10.npy
+│   │   │   ├── t_target_x_BIWI_10.npy
+│   │   │   ├── t_target_y_BIWI_10.npy
+│   │   │   └── t_target_z_BIWI_10.npy
+│   │   └── BIWI_train_npy_data
+│   │       ├── frame_id_BIWI_10.npy
+│   │       ├── ids_BIWI_10.npy
+│   │       ├── source_x_BIWI_10.npy
+│   │       ├── source_y_BIWI_10.npy
+│   │       ├── source_z_BIWI_10.npy
+│   │       ├── target_x_BIWI_10.npy
+│   │       ├── target_y_BIWI_10.npy
+│   │       └── target_z_BIWI_10.npy
+│   ├── 4
+│   │   ├── BIWI_test_npy_data
+│   │   │   ├── frame_id_BIWI_4.npy
+│   │   │   ├── ids_BIWI_4.npy
+│   │   │   ├── t_source_x_BIWI_4.npy
+│   │   │   ├── t_source_y_BIWI_4.npy
+│   │   │   ├── t_source_z_BIWI_4.npy
+│   │   │   ├── t_target_x_BIWI_4.npy
+│   │   │   ├── t_target_y_BIWI_4.npy
+│   │   │   └── t_target_z_BIWI_4.npy
+│   │   └── BIWI_train_npy_data
+│   │       ├── frame_id_BIWI_4.npy
+│   │       ├── ids_BIWI_4.npy
+│   │       ├── source_x_BIWI_4.npy
+│   │       ├── source_y_BIWI_4.npy
+│   │       ├── source_z_BIWI_4.npy
+│   │       ├── target_x_BIWI_4.npy
+│   │       ├── target_y_BIWI_4.npy
+│   │       └── target_z_BIWI_4.npy
+│   ├── 6
+│   │   ├── BIWI_test_npy_data
+│   │   │   ├── frame_id_BIWI_6.npy
+│   │   │   ├── ids_BIWI_6.npy
+│   │   │   ├── t_source_x_BIWI_6.npy
+│   │   │   ├── t_source_y_BIWI_6.npy
+│   │   │   ├── t_source_z_BIWI_6.npy
+│   │   │   ├── t_target_x_BIWI_6.npy
+│   │   │   ├── t_target_y_BIWI_6.npy
+│   │   │   └── t_target_z_BIWI_6.npy
+│   │   └── BIWI_train_npy_data
+│   │       ├── frame_id_BIWI_6.npy
+│   │       ├── ids_BIWI_6.npy
+│   │       ├── source_x_BIWI_6.npy
+│   │       ├── source_y_BIWI_6.npy
+│   │       ├── source_z_BIWI_6.npy
+│   │       ├── target_x_BIWI_6.npy
+│   │       ├── target_y_BIWI_6.npy
+│   │       └── target_z_BIWI_6.npy
+│   └── 8
+│       ├── BIWI_test_npy_data
+│       │   ├── frame_id_BIWI_8.npy
+│       │   ├── ids_BIWI_8.npy
+│       │   ├── t_source_x_BIWI_8.npy
+│       │   ├── t_source_y_BIWI_8.npy
+│       │   ├── t_source_z_BIWI_8.npy
+│       │   ├── t_target_x_BIWI_8.npy
+│       │   ├── t_target_y_BIWI_8.npy
+│       │   └── t_target_z_BIWI_8.npy
+│       └── BIWI_train_npy_data
+│           ├── frame_id_BIWI_8.npy
+│           ├── ids_BIWI_8.npy
+│           ├── source_x_BIWI_8.npy
+│           ├── source_y_BIWI_8.npy
+│           ├── source_z_BIWI_8.npy
+│           ├── target_x_BIWI_8.npy
+│           ├── target_y_BIWI_8.npy
+│           └── target_z_BIWI_8.npy
+├── IAS
+│   ├── 10
+│   │   ├── IAS_test_npy_data
+│   │   │   ├── frame_id_IAS-A_10.npy
+│   │   │   ├── frame_id_IAS-B_10.npy
+│   │   │   ├── ids_IAS-A_10.npy
+│   │   │   ├── ids_IAS-B_10.npy
+│   │   │   ├── t_source_x_IAS-A_10.npy
+│   │   │   ├── t_source_x_IAS-B_10.npy
+│   │   │   ├── t_source_y_IAS-A_10.npy
+│   │   │   ├── t_source_y_IAS-B_10.npy
+│   │   │   ├── t_source_z_IAS-A_10.npy
+│   │   │   ├── t_source_z_IAS-B_10.npy
+│   │   │   ├── t_target_x_IAS-A_10.npy
+│   │   │   ├── t_target_x_IAS-B_10.npy
+│   │   │   ├── t_target_y_IAS-A_10.npy
+│   │   │   ├── t_target_y_IAS-B_10.npy
+│   │   │   ├── t_target_z_IAS-A_10.npy
+│   │   │   └── t_target_z_IAS-B_10.npy
+│   │   └── IAS_train_npy_data
+│   │       ├── frame_id_IAS_10.npy
+│   │       ├── ids_IAS_10.npy
+│   │       ├── source_x_IAS_10.npy
+│   │       ├── source_y_IAS_10.npy
+│   │       ├── source_z_IAS_10.npy
+│   │       ├── target_x_IAS_10.npy
+│   │       ├── target_y_IAS_10.npy
+│   │       └── target_z_IAS_10.npy
+│   ├── 4
+│   │   ├── IAS_test_npy_data
+│   │   │   ├── frame_id_IAS-A_4.npy
+│   │   │   ├── frame_id_IAS-B_4.npy
+│   │   │   ├── ids_IAS-A_4.npy
+│   │   │   ├── ids_IAS-A_8.npy
+│   │   │   ├── ids_IAS-B_4.npy
+│   │   │   ├── t_source_x_IAS-A_4.npy
+│   │   │   ├── t_source_x_IAS-B_4.npy
+│   │   │   ├── t_source_y_IAS-A_4.npy
+│   │   │   ├── t_source_y_IAS-B_4.npy
+│   │   │   ├── t_source_z_IAS-A_4.npy
+│   │   │   ├── t_source_z_IAS-B_4.npy
+│   │   │   ├── t_target_x_IAS-A_4.npy
+│   │   │   ├── t_target_x_IAS-B_4.npy
+│   │   │   ├── t_target_y_IAS-A_4.npy
+│   │   │   ├── t_target_y_IAS-B_4.npy
+│   │   │   ├── t_target_z_IAS-A_4.npy
+│   │   │   └── t_target_z_IAS-B_4.npy
+│   │   └── IAS_train_npy_data
+│   │       ├── frame_id_IAS_4.npy
+│   │       ├── ids_IAS_4.npy
+│   │       ├── source_x_IAS_4.npy
+│   │       ├── source_y_IAS_4.npy
+│   │       ├── source_z_IAS_4.npy
+│   │       ├── target_x_IAS_4.npy
+│   │       ├── target_y_IAS_4.npy
+│   │       └── target_z_IAS_4.npy
+│   ├── 6
+│   │   ├── IAS_test_npy_data
+│   │   │   ├── frame_id_IAS-A_6.npy
+│   │   │   ├── frame_id_IAS-B_6.npy
+│   │   │   ├── ids_IAS-A_6.npy
+│   │   │   ├── ids_IAS-B_6.npy
+│   │   │   ├── t_source_x_IAS-A_6.npy
+│   │   │   ├── t_source_x_IAS-B_6.npy
+│   │   │   ├── t_source_y_IAS-A_6.npy
+│   │   │   ├── t_source_y_IAS-B_6.npy
+│   │   │   ├── t_source_z_IAS-A_6.npy
+│   │   │   ├── t_source_z_IAS-B_6.npy
+│   │   │   ├── t_target_x_IAS-A_6.npy
+│   │   │   ├── t_target_x_IAS-B_6.npy
+│   │   │   ├── t_target_y_IAS-A_6.npy
+│   │   │   ├── t_target_y_IAS-B_6.npy
+│   │   │   ├── t_target_z_IAS-A_6.npy
+│   │   │   └── t_target_z_IAS-B_6.npy
+│   │   └── IAS_train_npy_data
+│   │       ├── frame_id_IAS_6.npy
+│   │       ├── ids_IAS_6.npy
+│   │       ├── source_x_IAS_6.npy
+│   │       ├── source_y_IAS_6.npy
+│   │       ├── source_z_IAS_6.npy
+│   │       ├── target_x_IAS_6.npy
+│   │       ├── target_y_IAS_6.npy
+│   │       └── target_z_IAS_6.npy
+│   └── 8
+│       ├── IAS_test_npy_data
+│       │   ├── frame_id_IAS-A_8.npy
+│       │   ├── frame_id_IAS-B_8.npy
+│       │   ├── ids_IAS-A_8.npy
+│       │   ├── ids_IAS-B_8.npy
+│       │   ├── t_source_x_IAS-A_8.npy
+│       │   ├── t_source_x_IAS-B_8.npy
+│       │   ├── t_source_y_IAS-A_8.npy
+│       │   ├── t_source_y_IAS-B_8.npy
+│       │   ├── t_source_z_IAS-A_8.npy
+│       │   ├── t_source_z_IAS-B_8.npy
+│       │   ├── t_target_x_IAS-A_8.npy
+│       │   ├── t_target_x_IAS-B_8.npy
+│       │   ├── t_target_y_IAS-A_8.npy
+│       │   ├── t_target_y_IAS-B_8.npy
+│       │   ├── t_target_z_IAS-A_8.npy
+│       │   └── t_target_z_IAS-B_8.npy
+│       └── IAS_train_npy_data
+│           ├── frame_id_IAS_8.npy
+│           ├── ids_IAS_8.npy
+│           ├── source_x_IAS_8.npy
+│           ├── source_y_IAS_8.npy
+│           ├── source_z_IAS_8.npy
+│           ├── target_x_IAS_8.npy
+│           ├── target_y_IAS_8.npy
+│           └── target_z_IAS_8.npy
+└── KGBD
+    ├── 10
+    │   ├── KGBD_test_npy_data
+    │   │   ├── frame_id_KGBD_10.npy
+    │   │   ├── ids_KGBD_10.npy
+    │   │   ├── t_source_x_KGBD_10.npy
+    │   │   ├── t_source_y_KGBD_10.npy
+    │   │   ├── t_source_z_KGBD_10.npy
+    │   │   ├── t_target_x_KGBD_10.npy
+    │   │   ├── t_target_y_KGBD_10.npy
+    │   │   └── t_target_z_KGBD_10.npy
+    │   └── KGBD_train_npy_data
+    │       ├── frame_id_KGBD_10.npy
+    │       ├── ids_KGBD_10.npy
+    │       ├── source_x_KGBD_10.npy
+    │       ├── source_y_KGBD_10.npy
+    │       ├── source_z_KGBD_10.npy
+    │       ├── target_x_KGBD_10.npy
+    │       ├── target_y_KGBD_10.npy
+    │       └── target_z_KGBD_10.npy
+    ├── 4
+    │   ├── KGBD_test_npy_data
+    │   │   ├── frame_id_KGBD_4.npy
+    │   │   ├── ids_KGBD_4.npy
+    │   │   ├── t_source_x_KGBD_4.npy
+    │   │   ├── t_source_y_KGBD_4.npy
+    │   │   ├── t_source_z_KGBD_4.npy
+    │   │   ├── t_target_x_KGBD_4.npy
+    │   │   ├── t_target_y_KGBD_4.npy
+    │   │   └── t_target_z_KGBD_4.npy
+    │   └── KGBD_train_npy_data
+    │       ├── frame_id_KGBD_4.npy
+    │       ├── ids_KGBD_4.npy
+    │       ├── source_x_KGBD_4.npy
+    │       ├── source_y_KGBD_4.npy
+    │       ├── source_z_KGBD_4.npy
+    │       ├── target_x_KGBD_4.npy
+    │       ├── target_y_KGBD_4.npy
+    │       └── target_z_KGBD_4.npy
+    ├── 6
+    │   ├── KGBD_test_npy_data
+    │   │   ├── frame_id_KGBD_6.npy
+    │   │   ├── ids_KGBD_6.npy
+    │   │   ├── t_source_x_KGBD_6.npy
+    │   │   ├── t_source_y_KGBD_6.npy
+    │   │   ├── t_source_z_KGBD_6.npy
+    │   │   ├── t_target_x_KGBD_6.npy
+    │   │   ├── t_target_y_KGBD_6.npy
+    │   │   └── t_target_z_KGBD_6.npy
+    │   └── KGBD_train_npy_data
+    │       ├── frame_id_KGBD_6.npy
+    │       ├── ids_KGBD_6.npy
+    │       ├── source_x_KGBD_6.npy
+    │       ├── source_y_KGBD_6.npy
+    │       ├── source_z_KGBD_6.npy
+    │       ├── target_x_KGBD_6.npy
+    │       ├── target_y_KGBD_6.npy
+    │       └── target_z_KGBD_6.npy
+    └── 8
+        ├── KGBD_test_npy_data
+        │   ├── frame_id_KGBD_8.npy
+        │   ├── ids_KGBD_8.npy
+        │   ├── t_source_x_KGBD_8.npy
+        │   ├── t_source_y_KGBD_8.npy
+        │   ├── t_source_z_KGBD_8.npy
+        │   ├── t_target_x_KGBD_8.npy
+        │   ├── t_target_y_KGBD_8.npy
+        │   └── t_target_z_KGBD_8.npy
+        └── KGBD_train_npy_data
+            ├── frame_id_KGBD_8.npy
+            ├── ids_KGBD_8.npy
+            ├── source_x_KGBD_8.npy
+            ├── source_y_KGBD_8.npy
+            ├── source_z_KGBD_8.npy
+            ├── target_x_KGBD_8.npy
+            ├── target_y_KGBD_8.npy
+            ├── target_z_KGBD_8(1).npy
+            └── target_z_KGBD_8.npy
+
+```
+
+```
+python train.py --dataset BIWI --model prediction --gpu 0
+```
+
