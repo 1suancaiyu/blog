@@ -37,8 +37,6 @@ remove conda env
 conda env remove --name myenv
 ```
 
-# conda
-
 anacodna download link
 https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 
@@ -80,7 +78,7 @@ conda create --name new_name --clone old_name
 conda remove --name old_name --all
 ```
 
-export yaml file
+## export yaml file
 ```
 conda env export | grep -v "^prefix: " > environment.yml
 ```
