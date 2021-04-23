@@ -1,5 +1,5 @@
 from PIL import Image
-im = Image.open('文章封面图.png')
+im = Image.open('tmp.jpg')
 
 
 def crop_center(pil_img, crop_width, crop_height):
@@ -12,11 +12,11 @@ def crop_center(pil_img, crop_width, crop_height):
 
 image_width, image_height = im.size
 im_new = crop_center(im, image_height, int(image_height/16*9))
-im_new.save('封面图16-9.jpg', quality=95)
+im_new.save('img_16_9.jpg', quality=95)
 im_new = crop_center(im, image_height, int(image_height/4*3))
-im_new.save('封面图4-3.jpg', quality=95)
+im_new.save('img_16_9.jpg', quality=95)
 im_new = crop_center(im, image_height, int(image_height/3*2))
-im_new.save('封面图3-2.jpg', quality=95)
+im_new.save('img_3_2.jpg', quality=95)
 im_new = crop_center(im, image_height, int(image_height/1*1))
-im_new.save('封面图1-1.jpg', quality=95)
+im_new.save('img_1_1.jpg', quality=95)
 

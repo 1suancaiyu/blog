@@ -1,3 +1,4 @@
+install openssh-server
 ```
 sudo apt update
 sudo apt install openssh-server
@@ -10,4 +11,9 @@ sudo systemctl stop ssh
 sudo systemctl start ssh
 sudo systemctl disable ssh
 sudo systemctl enable ssh
+```
+
+allow root login
+```
+
 ```

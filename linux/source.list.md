@@ -1,4 +1,7 @@
 #  阿里源
+
+vim /etc/apt/source.list
+
 ```
 deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
 deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse

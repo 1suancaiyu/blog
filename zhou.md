@@ -33,3 +33,7 @@ run the STEP code using the ST-GCN dataset
 ```
 
 ## week 
+```
+搭建基于transformer的框架
+
+```
