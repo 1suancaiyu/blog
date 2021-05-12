@@ -4,8 +4,9 @@ nvidia-docker run -it -p [local port]:[docker port] --ipc=host -v [dokcer save d
 ```
 
 ```
-deepo
-nvidia-docker run -it -p 1920:22 --ipc=host -v /home/sci/private/wang_shu_xi:/wsx --name qln_deepo_matlab cf60a305ba7b
+deepo xrdp 3389
+
+nvidia-docker run -it -p 3212:22 -p 3218:3389  --ipc=host -v /home/sci/private/wang_shu_xi:/wsx --name wsx_rmtdsk cf60a305ba7b
 ```
 
 
@@ -49,7 +50,12 @@ kill -9 pid
 
 ## frp setup
 
-
+##
+```
+docker export name/id > xxx.tar
+docker import xxx.tar [new_docker_name]
+docker run -it 新容器:v1
+```
 
 ## xrdp setup
 ```
@@ -64,5 +70,15 @@ System has not been booted with systemd as init system (PID 1). Can't operate.
 
 change commadn "systemctl" to "service"
 systemctl start xrdp -> service xrdp start
+
+# error: failed to execute default terminal emulator
+apt-get install xfce4-terminal
+update-alternatives --config x-terminal-emulator
+Select xfce4-terminal.
+
+
+#after reboot
+
+service xrdp restart
 ```
 

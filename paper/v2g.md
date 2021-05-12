@@ -8,6 +8,6 @@ over 1400
 natural emotional body expressions and monologues 
 3-dimensional motion data
 120 frames per second
-
 positions and orientations
 23 body joints every frame
+

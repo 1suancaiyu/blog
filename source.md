@@ -129,15 +129,9 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 #### vim ~/.config/pip/pip.conf
 ```
-#清华云
 [global]
-index-url = https://pypi.tuna.tsinghua.edu.cn/simple12
 
-#阿里云
-[global] 
-index-url = http://mirrors.aliyun.com/pypi/simple/ 
-[install] 
-trusted-host=mirrors.aliyun.com 
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple12
 ```
 ### temporal using
 ```

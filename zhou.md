@@ -1,4 +1,4 @@
-# zhou:
+#  zhou:
 
 ## week3
 ```
@@ -32,8 +32,16 @@ figure out self-supervised learning based on auto-encoder
 run the STEP code using the ST-GCN dataset 
 ```
 
-## week 
+## week 8
 ```
 搭建基于transformer的框架
-
 ```
+
+## week 9
+```
+PoseFormer ST transformer的输出其实也是一个步态序列
+然后将head换掉，用AS-GCN的分类器，用NTU-RGB-D数据集，将2D数据表征变成3D,实现任务1，动作识别
+设计多任务训练，实现任务2，增加鲁棒性
+重建步态序列，用Spatio-temporal的方法，实现任务3，重建步态序列
+```
+

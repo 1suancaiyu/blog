@@ -587,7 +587,6 @@ array([ 0,  0,  0, ..., 49, 49, 49], dtype=int64)
 ### train
 
 python train.py --dataset BIWI --model prediction --length 10 --gpu 0
-
 ```
 wsx log BIWI input_data shape (70098, 20)
 wsx log BIWI input_data reshape (11683, 6, 20)
@@ -596,3 +595,127 @@ wsx log input_data.tolist() len(input_data):  11683
 wsx log targets tolist() len(targets):  11683
 ```
 
+
+
+### data and label
+```
+ 345 def get_data_BIWI(dimension, fr):
+ 346         print("wsx log: get_data_BIWI(dimension, fr)", "dim",dimension,'\t',"fr",'\t',fr)
+ 347         input_data_dir = 'Datasets/' + frames_ps + 'BIWI_train_npy_data/source_' + dimension + '_BIWI_' + str(fr) + '.npy'
+ 348         print(input_data_dir)
+ 349         input_data = np.load('Datasets/' + frames_ps + 'BIWI_train_npy_data/source_' + dimension + '_BIWI_' + str(fr) + '.npy')
+ 350         print("wsx log: frames_ps", frames_ps)
+ 351         print("wsx log BIWI input_data shape",input_data.shape)
+ 352         input_data = input_data.reshape([-1, time_steps, series_length])
+ 353         print("wsx log BIWI input_data reshape",input_data.shape)
+ 354         if Model == 'rev_rec' or Model == 'rev_rec_plus':
+ 355                 print("log: enter rev_rec")
+ 356                 input_data = input_data.tolist()
+ 357                 targets = np.load('Datasets/'+ frames_ps +'BIWI_train_npy_data/target_' + dimension + '_BIWI_' + str(fr) + '.npy')
+ 358                 print("log: targets shape",targets.shape)
+ 359                 targets = targets.reshape([-1,time_steps, series_length])
+ 360                 print("log: targets reshape",targets.shape)
+ 361                 targets = targets.tolist()
+ 362         # prediction
+ 363         elif Model == 'prediction':
+ 364                 targets = np.concatenate((input_data[1:, :, :], input_data[-1, :, :].reshape([1, time_steps, series_length])),
+ 365                                          axis=0)
+ 366                 print("wsx log targets shape: ",targets.shape)
+ 367                 # input_data = input_data[:-1]
+ 368                 input_data = input_data.tolist()
+ 369                 print("wsx log input_data.tolist() len(input_data): ",len(input_data))
+ 370                 targets = targets.tolist()
+ 371                 print("wsx log targets tolist() len(targets): ",len(targets))
+ 372         # 2. permutation
+ 373         elif Model == 'sorting':
+ 374                 targets = copy.deepcopy(input_data)
+ 375                 for i in range(input_data.shape[0]):
+ 376                         permutation_ = np.random.permutation(time_steps)
+ 377                         input_data[i] = input_data[i, permutation_]
+ 378                 input_data = input_data.tolist()
+ 379                 targets = targets.tolist()
+ 380         # t_input_data = np.load('Datasets/'+ frames_ps +'BIWI_test_npy_data/t_source_' + dimension + '_BIWI_' + str(fr) + '.npy')
+ 381         # t_input_data = t_input_data.reshape([-1, time_steps, series_length])
+ 382         # t_input_data = t_input_data.tolist()
+ 383         # t_targets = np.load('Datasets/'+ frames_ps +'BIWI_test_npy_data/t_target_' + dimension + '_BIWI_' + str(fr) + '.npy')
+ 384         # t_targets = t_targets.reshape([-1, time_steps, series_length])
+ 385         # t_targets = t_targets.tolist()
+ 386         # # return input_data, targets, t_input_data, t_targets
+ 387         return input_data[:-len(input_data)//3], targets[:-len(input_data)//3], input_data[-len(input_data)//3:], targets[-len(input_data)//3:]
+```
+
+
+
+### arget data saved the reversed data
+
+```
+log: input_data[:3,:,:]->    
+
+ [[[ 0.0413  0.0425  0.038   0.0357 -0.1279 -0.1727 -0.1798 -0.1822
+    0.2007  0.2677  0.2896  0.2892 -0.0322 -0.0014  0.0173  0.0161
+    0.1158  0.0784  0.0616  0.0572]
+  [ 0.034   0.035   0.039   0.033  -0.1263 -0.1731 -0.1743 -0.1708
+    0.2015  0.2639  0.2901  0.2918 -0.0424  0.0336  0.0507  0.052
+    0.1085  0.1303  0.1145  0.0976]
+  [ 0.0347  0.0349  0.0342  0.025  -0.1281 -0.1683 -0.1791 -0.1791
+    0.1976  0.2658  0.2905  0.2985 -0.0402  0.03    0.0541  0.0693
+    0.11    0.1478  0.1109  0.0917]
+  [ 0.0431  0.0422  0.0289  0.0108 -0.1325 -0.1693 -0.1734 -0.173
+    0.1952  0.2675  0.2945  0.2987 -0.0302  0.0388  0.0546  0.0672
+    0.1211  0.1409  0.1284  0.0904]
+  [ 0.0497  0.0504  0.032  -0.0049 -0.1379 -0.1676 -0.1728 -0.1665
+    0.196   0.2697  0.2941  0.3042 -0.0231  0.0506  0.0531  0.0728
+    0.1288  0.1681  0.164   0.1243]
+  [ 0.0383  0.0468  0.0351 -0.0207 -0.1378 -0.1611 -0.1724 -0.1652
+    0.1882  0.2651  0.2909  0.2983 -0.0343  0.0313  0.0558  0.0435
+    0.1121  0.158   0.1664  0.2207]
+  [ 0.029   0.0466  0.0353 -0.0357 -0.1347 -0.1588 -0.1757 -0.1714
+    0.1783  0.2685  0.2817  0.2808 -0.0422  0.016   0.0696  0.0428
+    0.0976  0.1432  0.2347  0.2218]
+  [ 0.0227  0.0491  0.0351 -0.0468 -0.12   -0.1548 -0.1784 -0.1793
+    0.1661  0.2628  0.2544  0.2535 -0.0448  0.0077  0.0748  0.0421
+    0.0858  0.1313  0.2441  0.2178]
+  [ 0.0181  0.0504  0.0318 -0.0567 -0.0846 -0.141  -0.1815 -0.1975
+    0.1484  0.2487  0.2277  0.2175 -0.0407  0.0023  0.0751  0.0442
+    0.0705  0.1258  0.2383  0.1995]
+  [ 0.0053  0.0441  0.0237 -0.0643 -0.0714 -0.1064 -0.1585 -0.1852
+    0.1214  0.2063  0.1765  0.174  -0.0401  0.0057  0.0774  0.0494
+    0.0445  0.127   0.2385  0.1852]]
+ 
+log: enter rev_rec
+log: targets shape (68400, 20)
+log: targets reshape (6840, 10, 20)
+log: targets[:3,:,:]->    
+
+
+ [[[ 0.0053  0.0441  0.0237 -0.0643 -0.0714 -0.1064 -0.1585 -0.1852
+    0.1214  0.2063  0.1765  0.174  -0.0401  0.0057  0.0774  0.0494
+    0.0445  0.127   0.2385  0.1852]
+  [ 0.0181  0.0504  0.0318 -0.0567 -0.0846 -0.141  -0.1815 -0.1975
+    0.1484  0.2487  0.2277  0.2175 -0.0407  0.0023  0.0751  0.0442
+    0.0705  0.1258  0.2383  0.1995]
+  [ 0.0227  0.0491  0.0351 -0.0468 -0.12   -0.1548 -0.1784 -0.1793
+    0.1661  0.2628  0.2544  0.2535 -0.0448  0.0077  0.0748  0.0421
+    0.0858  0.1313  0.2441  0.2178]
+  [ 0.029   0.0466  0.0353 -0.0357 -0.1347 -0.1588 -0.1757 -0.1714
+    0.1783  0.2685  0.2817  0.2808 -0.0422  0.016   0.0696  0.0428
+    0.0976  0.1432  0.2347  0.2218]
+  [ 0.0383  0.0468  0.0351 -0.0207 -0.1378 -0.1611 -0.1724 -0.1652
+    0.1882  0.2651  0.2909  0.2983 -0.0343  0.0313  0.0558  0.0435
+    0.1121  0.158   0.1664  0.2207]
+  [ 0.0497  0.0504  0.032  -0.0049 -0.1379 -0.1676 -0.1728 -0.1665
+    0.196   0.2697  0.2941  0.3042 -0.0231  0.0506  0.0531  0.0728
+    0.1288  0.1681  0.164   0.1243]
+  [ 0.0431  0.0422  0.0289  0.0108 -0.1325 -0.1693 -0.1734 -0.173
+    0.1952  0.2675  0.2945  0.2987 -0.0302  0.0388  0.0546  0.0672
+    0.1211  0.1409  0.1284  0.0904]
+  [ 0.0347  0.0349  0.0342  0.025  -0.1281 -0.1683 -0.1791 -0.1791
+    0.1976  0.2658  0.2905  0.2985 -0.0402  0.03    0.0541  0.0693
+    0.11    0.1478  0.1109  0.0917]
+  [ 0.034   0.035   0.039   0.033  -0.1263 -0.1731 -0.1743 -0.1708
+    0.2015  0.2639  0.2901  0.2918 -0.0424  0.0336  0.0507  0.052
+    0.1085  0.1303  0.1145  0.0976]
+  [ 0.0413  0.0425  0.038   0.0357 -0.1279 -0.1727 -0.1798 -0.1822
+    0.2007  0.2677  0.2896  0.2892 -0.0322 -0.0014  0.0173  0.0161
+    0.1158  0.0784  0.0616  0.0572]]
+```

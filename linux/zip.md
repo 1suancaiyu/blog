@@ -35,3 +35,8 @@ tar –xvzf documents.tar.gz –C /home/user/destination
 ```
 
 
+
+```
+for file in *.tgz; do tar -xvzf $file; done
+```
+
