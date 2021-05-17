@@ -137,3 +137,11 @@ cameras_train
 ```
 H = F.avg_pool2d(H, H.size()[2:])
 ```
+
+```
+batch_2d
+(1,1475,17,2)
+
+batch_3d
+(1,1449,17,3)
+```
