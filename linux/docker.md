@@ -55,15 +55,6 @@
    sudo docker run hello-world
    ```
 
-7. 看到以下结果，即证明已经Docker已经安装成功
-
-<img src="01.png" style="zoom:80%;" />
-
-```
-
-```
-
-
 
 # 安装nvidia-docker2
 
@@ -71,13 +62,23 @@
 
 1. Setup the stable repository and the GPG key:
 
-   ```shell
+```shell
    distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
       && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
       && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-   ```
+```
 
-   在执行这一步以及后面的操作时遇到问题：“gpg: 找不到有效的 OpenPGP”、“E: 无法定位软件包 nvidia-docker2”。[解决方案](https://blog.csdn.net/weixin_43002433/article/details/108888927)。
+在执行这一步以及后面的操作时遇到问题：“gpg: 找不到有效的 OpenPGP”、“E: 无法定位软件包 nvidia-docker2”。[解决方案](https://blog.csdn.net/weixin_43002433/article/details/108888927)。
+
+```
+sudo vim  /etc/hosts
+nvidia.github.io
+185.199.108.153 nvidia.github.io
+185.199.109.153 nvidia.github.io
+185.199.110.153 nvidia.github.io
+185.199.111.153 nvidia.github.io
+
+```
 
 2. Install the nvidia-docker2 package (and dependencies) after updating the package listing:
 
@@ -87,7 +88,7 @@
    sudo apt-get install -y nvidia-docker2
    ```
 
-3. Restart the Docker daemon to complete the installation after setting the default runtime:
+4. 3. Restart the Docker daemon to complete the installation after setting the default runtime:
 
    ```shell
    sudo systemctl restart docker
@@ -98,7 +99,7 @@
    ```shell
    sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
    ```
-   
+
 5. 安装包含jupyter以及所有主流框架的镜像
 
    ```shell
@@ -108,7 +109,11 @@
 
 
 
-# build docker
+# 创建容器
+
+## 创建可调用GPU的容器
+
+### 1. 使用nvidia-docker创建
 ```
 nvidia-docker run -it -p [local port]:[docker port] --ipc=host -v [dokcer save dir]:/[share floder name] --name [docker name] [docker images id]
 ```
@@ -116,21 +121,66 @@ nvidia-docker run -it -p [local port]:[docker port] --ipc=host -v [dokcer save d
 ```
 deepo xrdp 3389
 
-nvidia-docker run -it -p 端口:22 -p 端口:3389  --ipc=host -v /home/sci/private/liu_ping_zhi:/lpz --name 名字 cf60a305ba7b
+nvidia-docker run -it -p 端口:22 -p 端口:3389  --ipc=host -v /home/wsx/:/wsx --name 名字 cf60a305ba7b
+```
+
+### 2. 使用docker加参数创建
+直接使用docker命令，而非nvidia-docker可以在docker中调用GPU资源(参考https://www.cnblogs.com/chester-cs/p/14444247.html)
+
+```
+sudo nvidia-docker run -it --gpus all  -p 3022:22 -p 3089:3389  --ipc=host -v /home/wsx/:/wsx --name wsxdkgpu                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  0517cf8bd653 /bin/bash
 ```
 
 
+# 容器常用命令
+进入容器docker start -i [容器名or ID]
+退出并停止容器crtl+a+d
+退出不停止容器crtl+q+p
+停止容器docker stop [容器名or ID]
+删除容器docker rm [容器名or ID]
 
-在容器中执行bash命令
-
+启动容器并可执行bash命令
 ```
 docker exec -it [docker id] /bin/bash
 ```
 
 
 
+# 容器镜像导入导出
 
-# errors	
+参考博客https://www.cnblogs.com/zhuochong/p/10064350.html
+
+将镜像导出
+docker save -o deepo.tar cf60a305ba7b
+docker save -o [导出镜像命名] [镜像id]
+
+将容器导出：
+docker export wsx_rmtdsk -o wsx_rmtdsk.tar
+docker export [容器名] -o [压缩包名]
+
+将导出的容器导入为镜像 
+sudo nvidia-docker import wsx_rmtdsk.tar wsxdocker:imp
+sudo nvidia-docker import [容器包名] [镜像名]:[tag]
+
+
+镜像是容器导入的，在用上面的命令创建容器的时候，会出现如下错误：
+```
+Error response from daemon: No command specified
+```
+解决方法：在末尾加上 /bin/bash
+```
+sudo nvidia-docker run -it -p 1022:22 -p 1089:3389  --ipc=host -v /home/wsx/:/wsx --name wsxdkr 0517cf8bd653 /bin/bash
+```
+参考：
+```
+解决办法有两个 1、题主这种就是使用create给镜像加上cmd命令，题主加的是/bin/bash 2、还有一种就是run的时候，在末尾加上cmd命令，如果是/bin/bash，就加上/bin/bash，如果是/usr/sbin/init，就加上/usr/sbin/init，根据不同镜像加合适的命令
+```
+
+
+
+
+
+# 常见错误	
 ```
 if hit like this
 System has not been booted with systemd as init system (PID 1). Can't operate.
@@ -140,16 +190,9 @@ systemctl start xrdp -> service xrdp start
 ```
 
 
-## export image
-```
-docker export name/id > xxx.tar
-docker import xxx.tar [new_docker_name]
-docker run -it 新容器:v1
-```
 
-
-
-## 软链接修改Docker本地镜像与容器的存储位置
+# 修改容器存储位置
+## 软连接方法（参考）
 ```
 默认情况下Docker的存放位置为：/var/lib/docker
 可以通过下面命令查看具体位置：
@@ -172,3 +215,4 @@ ln -s /root/data/docker /var/lib/docker
 
 这时候启动Docker时发现存储目录依旧是/var/lib/docker，但是实际上是存储在数据盘的，你可以在数据盘上看到容量变化。
 ```
+

@@ -36,11 +36,10 @@ sudo telinit 3 进入命令行界面
 sudo dpkg --add-architecture i386
 sudo apt install build-essential libc6:i386
 sudo chmod a+x NVIDIA-Linux-x86_64*
-sudo ./NVIDIA-Linux-x86_64* -no-x-check -no-nouveau-check -no-opengl-files
-
- 
+```
+sudo ./NVIDIA-Linux-x86_64*  -no-x-check -no-nouveau-check -no-opengl-files
+```
 #选项：
-
 The distribution-provided pre-install script failed! Are you sure you want to continue? -> CONTINUE INSTALLATION
 
 Would you like to register the kernel module souces with DKMS? This will allow DKMS to automatically build a new module, if you install a different kernel later? -> No
@@ -54,3 +53,13 @@ Would you like to run the nvidia-xconfig utility to automatically update your x 
 安装成功后，重启系统
 **这个时候要将视频连接线连接到机箱下端的独立显卡处的视频输出接口，因为这个时候已经启用了RTX3090的驱动**
 nvidia-smi检查显卡状态，可显示，表明驱动安装成功 
+
+
+
+
+```
+在linux 中卸载另一个系统工具 OS-Uninstaller 参考https://help.ubuntu.com/community/OS-Uninstaller
+
+gparted 磁盘管理工具
+```
+

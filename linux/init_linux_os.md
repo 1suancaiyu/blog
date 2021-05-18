@@ -2,12 +2,16 @@
 ```
 apt-get install openssh-server
 启动之前需手动创建/var/run/sshd，不然启动sshd的时候会报错
-mkdir -p /var/run/sshd
-sshd以守护进程运行
-/usr/sbin/sshd -D &
+systemctl enable ssh
+
 安装netstat，查看sshd是否监听22端口
 apt-get install net-tools
 netstat -apn | grep ssh
+
+或者：
+mkdir -p /var/run/sshd
+sshd以守护进程运行
+/usr/sbin/sshd -D &
 ```
 
 ## allow root login
@@ -23,14 +27,9 @@ vim /etc/ssh/sshd_config
 PermitRootLogin yes
 PermitEmptyPasswords yes
 
-# restart ssh
-ps -aux | grep ssh
-kill
-/usr/sbin/sshd -D &
 ```
 
 ## frp setup
-
 
 
 ## xrdp setup
@@ -44,7 +43,6 @@ systemctl status xrdp
 apt-get install xfce4-terminal
 update-alternatives --config x-terminal-emulator
 Select xfce4-terminal.
-
 
 
 sudo update-alternatives --config x-session-manager
