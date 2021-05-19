@@ -128,7 +128,7 @@ nvidia-docker run -it -p 端口:22 -p 端口:3389  --ipc=host -v /home/wsx/:/wsx
 直接使用docker命令，而非nvidia-docker可以在docker中调用GPU资源(参考https://www.cnblogs.com/chester-cs/p/14444247.html)
 
 ```
-sudo nvidia-docker run -it --gpus all  -p 3022:22 -p 3089:3389  --ipc=host -v /home/wsx/:/wsx --name wsxdkgpu                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  0517cf8bd653 /bin/bash
+docker run -it --gpus all  -p 3022:22 -p 3089:3389  --ipc=host -v /home/wsx/:/wsx --name wsxdkgpu                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  0517cf8bd653 /bin/bash
 ```
 
 
