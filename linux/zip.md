@@ -36,7 +36,11 @@ tar –xvzf documents.tar.gz –C /home/user/destination
 
 
 
+### unzip all the zip files 
+
 ```
 for file in *.tgz; do tar -xvzf $file; done
+
+for tar in *.tar.gz;  do tar xvf $tar; done
 ```
 

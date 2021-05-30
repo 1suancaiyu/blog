@@ -1,22 +1,8 @@
 # install ssh
 ```
 apt-get install openssh-server
-启动之前需手动创建/var/run/sshd，不然启动sshd的时候会报错
-systemctl enable ssh
 
-安装netstat，查看sshd是否监听22端口
-apt-get install net-tools
-netstat -apn | grep ssh
-
-或者：
-mkdir -p /var/run/sshd
-sshd以守护进程运行
-/usr/sbin/sshd -D &
-```
-
-## allow root login
-```
-edit "sshd-config" allow root login
+#allow root login
 
 "passwd root" setup a root passwd
 
@@ -27,9 +13,16 @@ vim /etc/ssh/sshd_config
 PermitRootLogin yes
 PermitEmptyPasswords yes
 
+service ssh enable
+service ssh restart
+
+安装netstat，查看sshd是否监听22端口
+apt-get install net-tools
+netstat -apn | grep ssh
 ```
 
 ## frp setup
+git clone https://github.com/1suancaiyu/frp
 
 
 ## xrdp setup

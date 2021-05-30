@@ -84,9 +84,6 @@ acition: (30)
 anim = {dict:2 }
 	positions (3852,17,3)
 	cameras = {list: 4}
-
-
-
 ```
 
 ## fetch()
@@ -145,3 +142,7 @@ batch_2d
 batch_3d
 (1,1449,17,3)
 ```
+
+
+
+![poseformer_two_task_net_frame](img/poseformer_two_task_net_frame.png)

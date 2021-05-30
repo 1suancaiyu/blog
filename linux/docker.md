@@ -131,6 +131,10 @@ nvidia-docker run -it -p 端口:22 -p 端口:3389  --ipc=host -v /home/wsx/:/wsx
 docker run -it --gpus all  -p 3022:22 -p 3089:3389  --ipc=host -v /home/wsx/:/wsx --name wsxdkgpu                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  0517cf8bd653 /bin/bash
 ```
 
+```
+docker run -it --gpus all  -p 4022:22 -p 4089:3389  --ipc=host -v /home/wsx/:/zengwei --name zengwei                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  2ec708416bb8
+```
+
 
 # 容器常用命令
 进入容器docker start -i [容器名or ID]
