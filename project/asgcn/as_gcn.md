@@ -1,4 +1,5 @@
-# data
+
+## dataset
 ```
 data
 |-- NTU-RGB+D
@@ -53,7 +54,7 @@ target_data = {Tensor: (32, 3, 10, 25, 2)} tensor([[[[[ 7.6411e-02,  9.0970e-02]
 
 
 
-error
+## error
 ```
 python main.py recognition -c config/as_gcn/ntu-xsub/train.yaml --device 0 1 2
 
@@ -62,42 +63,6 @@ pytorch多个显卡并行训练 RuntimeError: Caught RuntimeError in replica 0 o
 就是 网络模型的某个参数复制分配到 不同的GPU的时候，部分参数始终在GPU_0上
 https://blog.csdn.net/liu_yuan_kai/article/details/109290375
 ```
-
-for data, data_downsample, target_data, data_last, label in loader:
-```
-data: (32,3,290,25,2) 
-data_downsample:(32,3,50,25,2) 
-target_data:(32,3,10,25,2) 
-data_last:(32,3,1,25,2) 
-label:(32)
-```
-
-x_class, pred, target = self.model1(data, target_data, data_last, A_batch, self.arg.lamda_act)
-```
-input:
-data: (4,3,290,25,2)
-target_data: (4,3,10,25,2)
-data_last: (4,3,1,25,2)
-A_batch: (8,2,25,25)
-self.arg.lamda_act 0.5
-
-output:
-x_class (4,60)
-pred (4,3,10,25)
-target (4,3,10,25)
-```
-
-def forward(self, x, x_target, x_last, A_act, lamda_act):
-```
-x			data: 			(4,3,290,25,2) 
-x_target	target_data: 	(4,3,10,25,2)
-x_last		data_last: 		(4,3,1,25,2)
-A_act		A_batch: 		(8,2,25,25)
-lamda_act	self.arg.lamda_act 0.5
-```
-
-
-
 
 
 ```
@@ -116,10 +81,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 (16487, 3, 300, 25, 2)
 >>> 
 ```
-
-
-
-
 
 ```
 >>> import torch.nn as nn
@@ -140,3 +101,185 @@ tensor(2.5462, grad_fn=<NllLossBackward>)
 
 ```
 
+```
+RuntimeError: Tensor for argument #2 ‘weight’ is on CPU, but expected it to be on GPU (while checking arguments for cudnn_batch_norm)
+
+
+make the net to the cuda()
+self.model3.cuda()
+```
+
+
+
+## model analysis
+
+
+### data loader
+for data, data_downsample, target_data, data_last, label in loader:
+```
+data: (32,3,290,25,2) 
+data_downsample:(32,3,50,25,2) 
+target_data:(32,3,10,25,2) 
+data_last:(32,3,1,25,2) 
+label:(32)
+```
+
+### model
+
+#### model2	
+**net.utils.adj_learn.AdjacencyLearn**
+
+A_batch, prob, outputs, data_target = self.model2(data_downsample)
+
+it will train at first 10 epoches
+
+![clipboard](img/as_gcn/clipboard-1624623582810.png)
+
+<img src="img/as_gcn/clipboard-1622648514733.png" alt="img" style="zoom:60%;" />
+
+<img src="img/as_gcn/clipboard-1622648580804.png" alt="img" style="zoom:67%;" />
+
+
+
+
+
+
+
+
+
+
+
+#### model1 
+
+**net.as_gcn.Model**
+
+x_class, pred, target = self.model1(data, target_data, data_last, A_batch, self.arg.lamda_act)
+
+
+
+#### pipeline
+PretrainAIM
+the first 10 epoches
+```train() if training_A```
+
+TrainMainPipeline
+after the first 10 epoches
+```train() else```
+
+
+
+```
+input:
+data: (4,3,290,25,2)
+target_data: (4,3,10,25,2)
+data_last: (4,3,1,25,2)
+A_batch: (8,2,25,25)
+self.arg.lamda_act 0.5
+
+output:
+x_class (4,60)
+pred (4,3,10,25)
+target (4,3,10,25)
+```
+
+def   forward(self, x, x_target, x_last, A_act, lamda_act):
+```
+x			data: 			(4,3,290,25,2) 
+x_target	target_data: 	(4,3,10,25,2)
+x_last		data_last: 		(4,3,1,25,2)
+A_act		A_batch: 		(8,2,25,25)
+lamda_act	self.arg.lamda_act 0.5
+```
+
+
+
+## args
+
+```
+train:
+recognition -c config/as_gcn/ntu-xsub/train.yaml --device 1 --batch_size 4
+
+test:
+python main.py recognition -c config/as_gcn/ntu-xsub/test.yaml --device 0
+
+```
+
+
+
+
+
+
+## log
+
+train as the asgcn origin hyper parameter list
+train loss
+<img src="img/as_gcn/clipboard-1624625427825.png" alt="img" style="zoom:50%;" />
+train
+>3.8870446980296913
+>3.808238947053699
+>3.9460883728403027
+>3.9241404717755017
+>4.117355283280614
+>nan
+>nan
+>eval
+>4.041288025619448
+>\###############################################
+>[06.20.21|15:19:08] 	Top1: 54.67%
+>[06.20.21|15:19:08] 
+>[06.20.21|15:19:08] 	Top5: 86.08%
+
+
+
+
+
+**change the learn rate to 0.0075**
+tranining curve
+
+![img](img/as_gcn/clipboard-1624625843115.png)
+
+vlidation curve
+
+![img](img/as_gcn/clipboard-1624625860789.png)
+
+
+
+best epoch
+
+>[06.21.21|00:02:58] Eval epoch: 54
+>
+>[06.21.21|00:04:43] 	mean_loss_class: 1.0486512068052625
+>
+>[06.21.21|00:04:43] 
+>
+>[06.21.21|00:04:43] 	Top1: 73.49%
+>
+>[06.21.21|00:04:43] 
+>
+>[06.21.21|00:04:43] 	Top5: 92.97%
+>
+>test this model on test set
+>
+>top1  73%
+
+
+
+test this model on test set
+top1  73%
+![img](img/as_gcn/d7ea5fed5c1c048075bdb2e6d4e9608.png)
+
+
+
+paper result
+
+![img](img/as_gcn/clipboard-1624625982239.png)
+
+
+
+
+## notes
+**classification details**
+
+![img](img/as_gcn/clipboard-1624626035169.png)
+
+![img](img/as_gcn/clipboard-1624625427826.png)

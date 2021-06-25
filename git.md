@@ -14,6 +14,14 @@ git config --global user.name "wang shuxi"
 
 [core]
         editor ='vim'
+
+[user]
+        name = gitsuck
+        email = fxbp@outlook.com
+
+[core]
+        editor ='vim'
+
 ```
 
 
@@ -40,9 +48,29 @@ git push -u ogrigin main/master
 
 # force push
 git push -f 
+git push origin <your_branch_name> --force
 ```
 
 ## pull
 ```
 git pull
+```
+
+## branch
+```
+git branch <new-branch>
+git branch <new-branch> <base-branch>
+git branch <new-branch> commit id
+
+git checkout branch_name
+git push -u origin <local-branch>
+
+
+git cherry-pick <commit>
+```
+
+
+
+```bash
+git cherry-pick <commitHash>
 ```
