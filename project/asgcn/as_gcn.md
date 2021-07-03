@@ -54,7 +54,8 @@ target_data = {Tensor: (32, 3, 10, 25, 2)} tensor([[[[[ 7.6411e-02,  9.0970e-02]
 
 
 
-## error
+## Errors
+### GPU error
 ```
 python main.py recognition -c config/as_gcn/ntu-xsub/train.yaml --device 0 1 2
 
@@ -101,12 +102,30 @@ tensor(2.5462, grad_fn=<NllLossBackward>)
 
 ```
 
+### RuntimeError
 ```
 RuntimeError: Tensor for argument #2 ‘weight’ is on CPU, but expected it to be on GPU (while checking arguments for cudnn_batch_norm)
 
 
 make the net to the cuda()
 self.model3.cuda()
+```
+
+
+
+### 3090 cuda version error
+GeForce RTX 3090 with CUDA capability sm_86 is not compatible with the current PyTorch installation.
+The current PyTorch install supports CUDA capabilities sm_37 sm_50 sm_60 sm_61 sm_70 sm_75 compute_37.
+
+cuda 版本和pytorch版本不匹配
+
+solution
+https://pytorch.org/get-started/locally/
+
+```
+cuda 11.1
+
+pip3 install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 ```
 
 
@@ -199,6 +218,8 @@ lamda_act	self.arg.lamda_act 0.5
 train:
 recognition -c config/as_gcn/ntu-xsub/train.yaml --device 1 --batch_size 4
 
+python main.py recognition -c config/as_gcn/ntu-xsub/train.yaml --device 0 --batch_size 32
+
 test:
 python main.py recognition -c config/as_gcn/ntu-xsub/test.yaml --device 0
 
@@ -236,11 +257,11 @@ train
 **change the learn rate to 0.0075**
 tranining curve
 
-![img](img/as_gcn/clipboard-1624625843115.png)
+<img src="img/as_gcn/clipboard-1624625843115.png" alt="img" style="zoom:50%;" />
 
 vlidation curve
 
-![img](img/as_gcn/clipboard-1624625860789.png)
+<img src="img/as_gcn/clipboard-1624625860789.png" alt="img" style="zoom:50%;" />
 
 
 
@@ -283,3 +304,30 @@ paper result
 ![img](img/as_gcn/clipboard-1624626035169.png)
 
 ![img](img/as_gcn/clipboard-1624625427826.png)
+
+
+
+
+
+## tuning
+
+
+### bigger batch_size
+
+python main.py recognition -c config/as_gcn/ntu-xsub/train.yaml --device 0 --batch_size 32
+
+
+
+![image-20210629182226540](img/as_gcn/image-20210629182226540.png)
+
+![image-20210629182200805](img/as_gcn/image-20210629182200805.png)
+
+```
+[06.29.21|15:05:52] Eval epoch: 99
+[06.29.21|15:07:11]     mean_loss_class: 1.326048486136882
+[06.29.21|15:07:11]
+[06.29.21|15:07:11]     Top1: 72.27%
+[06.29.21|15:07:12]
+[06.29.21|15:07:12]     Top5: 91.36%
+```
+
