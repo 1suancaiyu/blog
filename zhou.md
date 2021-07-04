@@ -58,3 +58,22 @@ zhou:
 调整训练参数，是否过拟合
 参考asgcn，他的多任务训练是如何设计的，用哪个loss进行方向传播？early stop问题如何解决，两个任务的训练曲线观察。画出预测数据分布图
 
+
+
+## week 18
+
+用CNN的方法做基于skeleton的动作识别，常出现的一个思路是讲skeleton转化成特殊的image
+
+例如：(cpvr 2017) A New Representation of Skeleton Sequences for 3D Action Recognition
+
+![image-20210703162140324](img/zhou/image-20210703162140324.png)
+
+
+
+
+
+目前的最优的Skeleton Based Action Recognition on NTU RGB+D 就是用的这种CNN的方法。
+
+其次大部分用的基于stgcn那种GCN的方法。
+
+transformer在之前的研究中比较少见，可能是那时候还不火？目前近期的准确率还不错的，就这一篇老师之前发给我的

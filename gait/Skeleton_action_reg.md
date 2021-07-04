@@ -1,6 +1,10 @@
-## Skeleton Based Action Recognition on NTU RGB+D
+# Skeleton Based Action Recognition on NTU RGB+D
 
-**top 1 acc on NTU RGB+D**
+
+
+## Top acc
+
+### PoseC3D 
 
 https://github.com/open-mmlab/mmaction2
 
@@ -14,11 +18,13 @@ https://github.com/open-mmlab/mmaction2
 
 
 
+原始视频数据，算力开销巨大
+
+![image-20210704101911248](img/Skeleton_action_reg/image-20210704101911248.png)
 
 
 
-
-## 2D-CNN for skeleton-based action recognition
+## CNN
 
 skeleton sequence  >> pseudo image
 
@@ -40,3 +46,17 @@ Motion Information for 3D Action Recognition
 
 
 ![image-20210703165839019](img/Skeleton_action_reg/image-20210703165839019.png)
+
+## Transformer
+
+seldom used
+
+
+
+### ST-TR
+https://github.com/Chiaraplizz/ST-TR
+
+
+
+![image-20210704102511850](img/Skeleton_action_reg/image-20210704102511850.png)
+

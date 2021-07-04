@@ -148,6 +148,8 @@ docker run -it --gpus all  -p 4022:22 -p 4089:3389  --ipc=host -v /home/wsx/:/ze
 docker exec -it [docker id] /bin/bash
 ```
 
+# 查看容器大小
+查看 每个 image、container 详细大小：docker system df -v
 
 
 # 容器镜像导入导出
