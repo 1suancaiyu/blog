@@ -52,4 +52,4 @@ https://paperswithcode.com/sota/skeleton-based-action-recognition-on-ntu-rgbd
 ## Transformer
 transformer在之前的研究中比较少见，可能是那时候还不火？目前近期的准确率还不错的，就这一篇老师之前发给我的
 
-
+![image-20210704225659785](img/present/image-20210704225659785.png)
