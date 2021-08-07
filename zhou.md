@@ -70,10 +70,40 @@ zhou:
 
 
 
+# summur holiday
+## week 1
+
+### 本周所做
+- AAAI2021_MS_TGN
+
+  一种提取局部和全局特征的思路
+
+  <img src="img/zhou/image-20210731225415942.png" alt="image-20210731225415942" style="zoom:50%;" />
+
+  
+
+- x_multi_scale = torch.cat((x_transformer, x_gcn), 0)
 
 
-目前的最优的Skeleton Based Action Recognition on NTU RGB+D 就是用的这种CNN的方法。
 
-其次大部分用的基于stgcn那种GCN的方法。
 
-transformer在之前的研究中比较少见，可能是那时候还不火？目前近期的准确率还不错的，就这一篇老师之前发给我的
+### 周老师建议
+
+读一篇文章，要考虑他的motivation，解决了什么问题，解决这个问题，有没有其他的解决方法
+
+
+
+下周任务：
+
+1. 对坐标数据做norm
+
+2. 网络结构设计，局部和全局，空域时域（gcn 和 transformer如何cat）
+
+3. 多头注意力机制
+4. stgcn 的edge importance 是什么？
+5. 了解Res2Net 类似的思想论文，对channel 做 split
+
+
+
+
+

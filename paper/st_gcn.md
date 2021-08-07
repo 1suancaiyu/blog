@@ -52,7 +52,7 @@ cover a broad range of classes including human-object interactions such as playi
 as well as human-human interactions such as shaking hands. 
 ```
 
-![3-Figure1-1](img\3-Figure1-1.png)
+![3-Figure1-1](img/st_gcn/3-Figure1-1.png)
 
 ## ?
 
@@ -104,6 +104,7 @@ For the multi-person cases, we select 2 people with the highest average joint co
 #### Sample 
 ```
 >>> print(td[1,0,1]) 
+# x
 [[ 0.061  0.   ]
  [ 0.     0.   ]
  [ 0.     0.   ]
@@ -204,7 +205,7 @@ including daily, mutual, and health-related actions.
 ```
 http://rose1.ntu.edu.sg/datasets/actionrecognition.asp
 ```
-![Screen_Shot_2021-01-28_at_2.19.00_PM](img/Screen_Shot_2021-01-28_at_2.19.00_PM.png)
+![Screen_Shot_2021-01-28_at_2.19.00_PM](img/st_gcn/Screen_Shot_2021-01-28_at_2.19.00_PM.png)
 
 **x-sub**
 40320 train actors subset1
@@ -357,9 +358,7 @@ python main.py recognition -c /home/wsx/st-gcn/config/st_gcn/kinetics-skeleton/t
 
 
 ### flow
-![image-20210316085807661](img/image-20210316085807661.png)
-
-
+![image-20210316085807661](img/st_gcn/image-20210316085807661.png)
 
 
 
@@ -395,8 +394,10 @@ https://github.com/1suancaiyu/Locality-Awareness-SGE
 3. 最后实现任务1
 ```
 
-![image-20210316085807661](img\image-20210316085807661.png)
-![image-20210323084825154](img\image-20210323084825154.png)
+![image-20210316085807661](img/st_gcn/image-20210316085807661.png)
+
+
+![image-20210323084825154](img/st_gcn/image-20210323084825154.png)
 
 
 

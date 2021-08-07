@@ -128,11 +128,11 @@ nvidia-docker run -it -p 端口:22 -p 端口:3389  --ipc=host -v /home/wsx/:/wsx
 直接使用docker命令，而非nvidia-docker可以在docker中调用GPU资源(参考https://www.cnblogs.com/chester-cs/p/14444247.html)
 
 ```
-docker run -it --gpus all  -p 3022:22 -p 3089:3389  --ipc=host -v /home/wsx/:/wsx --name wsxdkgpu                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  0517cf8bd653 /bin/bash
+sudo docker run -it --gpus all  -p 1122:22 -p 1189:3389  --ipc=host -v /home/wsx/:/wsx -v /home/repo/:/repo --name wsx_ubuntu_py  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  074447744283  /bin/bash
 ```
 
 ```
-docker run -it --gpus all  -p 4022:22 -p 4089:3389  --ipc=host -v /home/wsx/:/zengwei --name zengwei                         -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  2ec708416bb8
+sudo docker run -it --gpus all  -p [ssh端口]:22  -p  [xrdp端口]:3389  --ipc=host -v  [host主机用户路径]:[docker路径]  -v [共用host路劲]:[docker 路径]  --name [docker名]  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  [镜像id]  /bin/bash
 ```
 
 
@@ -165,8 +165,8 @@ docker export wsx_rmtdsk -o wsx_rmtdsk.tar
 docker export [容器名] -o [压缩包名]
 
 将导出的容器导入为镜像 
-sudo nvidia-docker import wsx_rmtdsk.tar wsxdocker:imp
-sudo nvidia-docker import [容器包名] [镜像名]:[tag]
+docker import wsx_rmtdsk.tar wsxdocker:imp
+docker import [容器包名] [镜像名]:[tag]
 
 
 镜像是容器导入的，在用上面的命令创建容器的时候，会出现如下错误：
@@ -222,3 +222,38 @@ ln -s /root/data/docker /var/lib/docker
 这时候启动Docker时发现存储目录依旧是/var/lib/docker，但是实际上是存储在数据盘的，你可以在数据盘上看到容量变化。
 ```
 
+
+
+修改/etc/docker/daemon.json     "data-root"参数
+
+```
+{
+    "data-root": "/home/bci/docker_space",
+    "registry-mirrors": ["https://docker.mirrors.ustc.edu.cn"],
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+```
+
+Copy the current data directory to the new one
+sudo rsync -aP /var/lib/docker/ /path/to/your/docker
+
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart docker
+
+
+
+
+
+
+```
+docker run -it --gpus all  -p 2022:22 -p 2089:3389  --ipc=host -v /home/bci/usr/wsx/:/wsx --name wsx_dk_py  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  22c95c4181fe /bin/bash
+```
+
+
+
+docker run -it --gpus all  -p 2022:22 -p 2089:3389  --ipc=host -v /home/lili:/lili -v /home/repo:/repo --name lili  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  78a66e667d90 /bin/bash

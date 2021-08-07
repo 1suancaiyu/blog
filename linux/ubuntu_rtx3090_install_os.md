@@ -31,13 +31,28 @@ https://www.nvidia.cn/Download/index.aspx?lang=cn
 
 sudo telinit 3 进入命令行界面
 
+
+安装依赖
 ```
-#安装依赖
 sudo dpkg --add-architecture i386
 sudo apt install build-essential libc6:i386
-sudo chmod a+x NVIDIA-Linux-x86_64*
+
+binutils，GNU make，gcc
+sudo apt install binutils make gcc g++
 ```
+
+关闭图形化界面
+```
+init 3
+sudo service lightdm stop
+```
+添加权限
+sudo chmod a+x NVIDIA-Linux-x86_64*
+
+开始安装
+
 sudo ./NVIDIA-Linux-x86_64*  -no-x-check -no-nouveau-check -no-opengl-files
+
 ```
 #选项：
 The distribution-provided pre-install script failed! Are you sure you want to continue? -> CONTINUE INSTALLATION
@@ -63,3 +78,8 @@ nvidia-smi检查显卡状态，可显示，表明驱动安装成功
 gparted 磁盘管理工具
 ```
 
+
+
+卸载驱动
+
+sudo sh ./NVIDIA-Linux-x86_64-xxx.run  --uninstall

@@ -106,3 +106,9 @@ https://pypi.tuna.tsinghua.edu.cn/simple/
 # 中国科学技术大学 
 http://pypi.mirrors.ustc.edu.cn/simple/
 ```
+
+
+
+### offline install
+
+pip install xx.whl

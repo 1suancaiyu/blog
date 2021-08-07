@@ -331,3 +331,61 @@ python main.py recognition -c config/as_gcn/ntu-xsub/train.yaml --device 0 --bat
 [06.29.21|15:07:12]     Top5: 91.36%
 ```
 
+
+
+weight_decay: 0.0001
+base_lr1: 0.076
+Top1: 72.27%
+
+weight_decay: 0.0001
+base_lr1: 0.008
+Top1: 73.59%
+
+
+
+weight_decay: 0.0001
+base_lr1: 0.01
+Top1  73.27%
+
+
+
+
+## SpatialGcn
+```
+class SpatialGcn(nn.Module):
+
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 k_num,
+                 edge_type=2,
+                 t_kernel_size=1,
+                 t_stride=1,
+                 t_padding=0,
+                 t_dilation=1,
+                 bias=True):
+        super().__init__()
+
+        self.k_num = k_num
+        self.edge_type = edge_type
+        self.conv = nn.Conv2d(in_channels=in_channels,
+                              out_channels=out_channels*k_num,
+                              kernel_size=(t_kernel_size, 1),
+                              padding=(t_padding, 0),
+                              stride=(t_stride, 1),
+                              dilation=(t_dilation, 1),
+                              bias=bias)
+
+    def forward(self, x, A, B, lamda_act):
+
+        x = self.conv(x)
+        n, kc, t, v = x.size()
+        x = x.view(n, self.k_num,  kc//self.k_num, t, v)
+        x1 = x[:,:self.k_num-self.edge_type,:,:,:]
+        x2 = x[:,-self.edge_type:,:,:,:]
+        x1 = torch.einsum('nkctv,kvw->nctw', (x1, A))
+        x2 = torch.einsum('nkctv,nkvw->nctw', (x2, B))
+        x_sum = x1+x2*lamda_act
+
+        return x_sum.contiguous(), A
+```
