@@ -95,6 +95,9 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 
 ### pip source list
 ```
+#默认
+https://pypi.org/simple
+
 # 阿里云 
 http://mirrors.aliyun.com/pypi/simple/
 # 中国科技大学 

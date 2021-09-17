@@ -54,7 +54,6 @@ as well as human-human interactions such as shaking hands.
 
 ![3-Figure1-1](img/st_gcn/3-Figure1-1.png)
 
-## ?
 
 For the multi-person
 cases, we select 2 people with the highest average joint confidence in each clip. So if there is only one person in the frame, the another pad 0 ?
@@ -324,7 +323,9 @@ dependencies:
 prefix: /home/wsx/anaconda3/envs/stgcn
 ```
 
-error
+### error
+
+error1
 ```
 RuntimeError: CuDNN error: CUDNN_STATUS_SUCCESS
 ```
@@ -334,24 +335,49 @@ conda install cudatoolkit==10.0.130
 接着安装cudnn，直接使用conda install cudnn安装即可，它自己会选择和cuda版本对应的安装包
 最后安装Pytorch，从官网https://pytorch.org/get-started/locally/可以获得安装命令，记住cuda要选10.0的版本。得到的命令如下：conda install pytorch torchvision cudatoolkit=10.0 -c pytorch
 ```
-error
+error2
 ```
 RuntimeError: CUDA out of memory. Tried to allocate 352.00 MiB (GPU 0; 7.80 GiB total capacity; 6.45
 ```
 solution: smaller batch_size
 
+error3
+import error torchlight
 
+solution
+/st-gcn/torchlight# python setup.py install
+
+
+
+error4
+
+opencv
+
+conda install --channel https://conda.anaconda.org/menpo opencv3
+
+
+
+error
+
+[ImportError: libGL.so.1: cannot open shared object file: No such file or directory](https://stackoverflow.com/questions/55313610/importerror-libgl-so-1-cannot-open-shared-object-file-no-such-file-or-directo)
+
+apt-get install ffmpeg libsm6 libxext6  -y
+
+
+
+
+
+
+
+### args
 
 
 bci  gpu
 
 ```
-python main.py recognition -c config/st_gcn/kinetics-skeleton/train.yaml --work_dir work_dir --device 0 1 2
+python main.py recognition -c config/st_gcn/ntu-xsub/train.yaml --work_dir work_dir --device 0
 ```
-my gpu
-```
-python main.py recognition -c /home/wsx/st-gcn/config/st_gcn/kinetics-skeleton/train.yaml  --work_dir work_dir --device 0 --batch_size 10
-```
+
 
 
 
@@ -362,7 +388,71 @@ python main.py recognition -c /home/wsx/st-gcn/config/st_gcn/kinetics-skeleton/t
 
 
 
+## GCN
 
+            assert A.size(0) == self.kernel_size
+            # A: torch.Size([3, 25, 25])
+            # x: torch.Size([8, 3, 300, 25])
+            x = self.conv(x)
+            # x: torch.Size([8, 192, 300, 25])
+            n, kc, t, v = x.size()
+            x = x.view(n, self.kernel_size, kc//self.kernel_size, t, v) # x: torch.Size([8, 3, 64, 300, 25])
+            x = torch.einsum('nkctv,kvw->nctw', (x, A)) # torch.Size([8, 64, 300, 25])
+
+
+
+## TCN
+
+![image-20210909170916732](img/st_gcn/image-20210909170916732.png)
+
+
+
+在时间卷积中，卷积核的大小为『temporal_kernel_size』 [公式] 『1』，则每次完成 1 个节点，temporal_kernel_size 个关键帧的卷积。『stride』为 1，则每次移动 1 帧，完成 1 个节点后进行下 1 个节点的卷积。
+
+```
+        self.tcn = nn.Sequential(
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(
+                out_channels,
+                out_channels,
+                (kernel_size[0], 1),
+                (stride, 1),
+                padding,
+            ),
+            nn.BatchNorm2d(out_channels),
+            nn.Dropout(dropout, inplace=True),
+        )
+```
+
+
+
+### A矩阵
+
+​	代码中采用spatial划分方法，根据列对应的结点跟行对应的结点分别到中心点的距离（相等，列小于行，列大于行）将normalize_adjacency归一化后的矩阵的划分成三个权值矩阵，这三个权值矩阵的shape=(18,18),经过stack方法后堆叠成(3,18,18)
+
+![image-20210822093222676](img/st_gcn/image-20210822093222676.png)
+
+![image-20210822093039741](img/st_gcn/image-20210822093039741.png)
+
+
+
+这个A矩阵包含哪三种数据？
+
+ 
+
+
+
+### torch.einsum
+
+
+	x = torch.einsum('nkctv,kvw->nctw', (x, A))
+
+![20210320204710942](img/st_gcn/20210320204710942.png)
+
+
+
+这个公式可以理解为根据邻接矩阵中的邻接关系做了一次邻接节点间的特征融合，输出就变回了(N*M, C, T, V)的格式。具体的图形化理解可以参考上面的GCN那个图，就是得到的（k*c(也是output_channel),v,t）看成k组的 (c,v,t),每一组的对应通道上同一个t下v方向18个点与A中每一个对应通道下的v方向做点积（这个点积我个人认为可以看作是是一个图卷积，即18个点的2d位置和他们之间相对位置的一个融合，图每个i结点的周围j结点的特征朝着这个i结点流入。另外就是你A矩阵不是把人家周围j个结点分成3组了吗，也就是你A的3维度加起来才能表示出来一个结点周围完整的连接（也可以理解为只有你划分子集K=3的加起来才能还原出i结点周围的所有j结点的集合，只有你把这这A的三通道卷积结果加起来才能实现以i为中心j个周围结点的信息的流入））,因此把这3个通道相加得出output上的一个通道的结果。
 
 
 

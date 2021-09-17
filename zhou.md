@@ -1,4 +1,4 @@
-#  zhou:
+#  term 2
 
 ## week3
 ```
@@ -72,8 +72,6 @@ zhou:
 
 # summur holiday
 ## week 1
-
-### 本周所做
 - AAAI2021_MS_TGN
 
   一种提取局部和全局特征的思路
@@ -87,7 +85,7 @@ zhou:
 
 
 
-### 周老师建议
+## 20210803
 
 读一篇文章，要考虑他的motivation，解决了什么问题，解决这个问题，有没有其他的解决方法
 
@@ -97,13 +95,85 @@ zhou:
 
 1. 对坐标数据做norm
 
+   D:\workspace\blog\paper\ICCV2019_AMAL.md
+
 2. 网络结构设计，局部和全局，空域时域（gcn 和 transformer如何cat）
 
 3. 多头注意力机制
+
 4. stgcn 的edge importance 是什么？
+
 5. 了解Res2Net 类似的思想论文，对channel 做 split
 
 
+
+## 20210817
+
+1. 训练gcn + transformer提取空间特征，分析结果并改进。
+2. 采用其他非坐标数据，例如角度等信息，进行特征提取。
+3. 思考如何减少类类差，例如对坐标进行尺度缩放。
+
+## 20210817
+思考如何改进transformer
+
+如果只是加网络模块会造成参数量大的问题
+
+## 20210829
+> 我打算从上面几篇论文里整合一下我们下一步的试验，我大概看了论文，你也看看。
+>
+> 然后还有个问题就是这几篇论文之间的关系我还没太搞明白，你看的时候帮我梳理一下哈。
+>
+> 顺便了解一下比如shift convolution、separable convolution 这些网络的关系
+
+
+
+CTR-GCN
+
+https://medium.com/%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7-%E5%80%92%E5%BA%95%E6%9C%89%E5%A4%9A%E6%99%BA%E6%85%A7/%E8%AB%96%E6%96%87%E9%96%B1%E8%AE%80-iccv-2021-channel-wise-topology-refinement-graph-convolution-for-skeleton-based-action-2e3d85efe1b5
+
+
+
+STTR
+
+https://zhuanlan.zhihu.com/p/188488639
+
+> 这篇文章提出一个Spatial-Temporal Transformer network (ST-TR)模型，我翻译为时空转换网络。文章提到了ST-GCN的一些弊端，比如只能捕捉空间维度和时间维度的局部特征，使得效果并不好。鉴于此，文章将最初应用于NLP任务的转换器自我注意算法应用到骨骼行为识别中，由于其在处理长依赖关系时的灵活性，能够解决ST-GCN的很多弊端。文章也是将空间信息和时间信息分开做处理，对于空间维度，提出空间自我注意模块（SSA）来捕捉同一帧下不同关节的空间特征；时间自我注意模块（TSA）用来捕捉同一关节不同帧的时间特征。
+>
+> 我描述下SSA的大致过程。对于输入数据先通过可学习的线性变换计算一个查询 ![[公式]](https://www.zhihu.com/equation?tex=q) 、键 ![[公式]](https://www.zhihu.com/equation?tex=k) 和一个值向量 ![[公式]](https://www.zhihu.com/equation?tex=v) ，具体计算方法我不是很懂，但是注意这一步已经带了可学习的参数，后面步骤都是单纯的计算。接下来是将 ![[公式]](https://www.zhihu.com/equation?tex=q) 和 ![[公式]](https://www.zhihu.com/equation?tex=k%5E%7BT%7D) 进行点积，得到的结果是一个加权值，与 ![[公式]](https://www.zhihu.com/equation?tex=v) 加权的结果就是最后的加权节点。对于每一个节点，都要计算 ![[公式]](https://www.zhihu.com/equation?tex=q) 、 ![[公式]](https://www.zhihu.com/equation?tex=k) 和 ![[公式]](https://www.zhihu.com/equation?tex=v) 的值。针对于要计算加权结果的节点，为了方便我叫它源节点。源节点要计算加权结果时，需要其他每个节点参与计算，这是他能捕捉全局特征的体现。计算时需要源节点的 ![[公式]](https://www.zhihu.com/equation?tex=q) 和参与计算节点的 ![[公式]](https://www.zhihu.com/equation?tex=k) 和 ![[公式]](https://www.zhihu.com/equation?tex=v) ，把需要的 ![[公式]](https://www.zhihu.com/equation?tex=q) 、 ![[公式]](https://www.zhihu.com/equation?tex=k) 和 ![[公式]](https://www.zhihu.com/equation?tex=v) 带入我上面所说的公式计算出一个加权结果，再将每个节点参与计算的加权结果求和就是源节点的加权节点，也就是说输入的每一个节点都生成对应的加权节点，而这个加权节点可作为下一层的输入。借助矩阵计算的优势，可以将一帧所有节点的计算放在一个矩阵计算中。对于TSA，大致过程和SSA相同，只不过参与的节点是来自相同的空间位置不同的帧。整个网络的框架设计的很巧妙。文章采用一种双流网络，分为空间流和时间流，每一流前三层是GCN+TCN的组合，用于提取底层特征。空间流后面几层是SSA+TCN的组合，文章称这种组合为S-TR。也就是说空间流是用SSA提取空间特征，再用TCN处理时间特征。时间流后几层是GCN+TSA组合，文章称为T-TR。时间流是用GCN提取空间特征，用TSA提取时间特征。最后将空间流和时间流的结果融合再进行分类。
+>
+> 其实看到空间维度的SSA和时间维度的TSA，我想到的就是SSA+TSA的组合，但文章并没有这么做，而是分别结合GCN和TCN做了一个双流网路。文章最后也用实验证明了双流网络相比于SSA+TSA的优越性，这也是一个值得学习的思路。文章还提到一种多头注意机制，可能这不是这篇文章第一次提出来的，也没有太多解释，我没怎么看懂，我的感觉就是：注意力机制水很深！之前很多文章提到的骨骼的长度和方向文章也考虑到了，并且在其他方面也做了大量的实验，感觉工作量大也是顶会的特点吧。
+
+
+
+shift-conv
+
+https://blog.csdn.net/hahameier/article/details/109657562
+
+
+
+# term 3
+
+## 20210910
+
+5篇论文的方法分析比较
+
+channel 联系方法的比较和总结
+
+joints之间的关系( frame 内 , frame之间，channel 之间)
+
+跑代码
+
+
+
+how about to try some other datasets besides NTU-RGB-D and Kinects?
+
+
+
+DPRL+GCNN
+
+> 这是 CVPR 2018 中的一篇论文，作者提出了一种取关键帧的方法，类似于视频压缩中的取关键帧。因为在骨架序列中前后帧的信息可能会比较冗余，所以只需要选取序列中比较有代表性的关键帧，就可以进行动作的分类识别。所以在 GCNN 之前，作者加入了一个 FDNe t用来提取关键帧。作者实验证明，运用了取关键帧的方法，能够增加识别的准确率。
+
+- 取关键帧和transformer做融合
 
 
 

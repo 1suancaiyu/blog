@@ -148,6 +148,9 @@ sudo docker run -it --gpus all  -p [ssh端口]:22  -p  [xrdp端口]:3389  --ipc=
 docker exec -it [docker id] /bin/bash
 ```
 
+# 镜像操作
+docker rmi <image id> delete one image
+
 # 查看容器大小
 查看 每个 image、container 详细大小：docker system df -v
 

@@ -40,3 +40,14 @@ local_ip = 127.0.0.1
 local_port = 22
 remote_port = xxx #custom_port  
 }
+
+
+
+## 常见问题
+
+> [E] [proxy.go:793] [01a44f5ed94ac458] [dell_docker_ssh] connect to local service [127.0.0.1:22] error: dial tcp 127.0.0.1:22: connect: connection refused
+
+没有打开ssh 服务
+
+
+

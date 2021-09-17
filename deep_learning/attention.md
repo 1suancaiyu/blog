@@ -60,7 +60,133 @@
 
 
 
-### 代码
+
+
+
+
+
+多头注意力：**多头注意力（multi-head attention）是利用多个查询Q = [q1, · · · , qM]，来平行地计算从输入信息中选取多个信息。每个注意力关注输入信息的不同部分，然后再进行拼接.
+
+多头attention（Multi-head attention）结构如上图，==Query，Key，Value首先进过一个线性变换，然后输入到放缩点积attention，注意这里要做h次，也就是所谓的多头，每一次算一个头，**头之间参数不共享，**每次Q，K，V进行线性变换的参数![W](https://math.jianshu.com/math?formula=W)是不一样的。== 然后将h次的放缩点积attention结果进行拼接，再进行一次线性变换得到的值作为多头attention的结果。
+
+![image-20210808121424808](img/attention/image-20210808121424808.png)
+
+
+
+
+
+## 其他讲解
+
+### 单头分割变多头
+https://zhuanlan.zhihu.com/p/387373100
+
+**Attention is all you need 论文解读**
+
+可以看到所谓的多头注意力机制其实就是将原始的输入序列进行多组的自注意力处理过程；然后再将每一组自注意力的结果拼接起来进行一次线性变换得到最终的输出结果。
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Ctext%7BMultiHead%7D%28Q%2CK%2CV%29%3D%5Ctext%7BConcat%7D%28%5Ctext%7Bhead%7D_1%2C...%2C%5Ctext%7Bhead%7D_h%29W%5EO%5C%5C+%5C%3B%5C%3B%5C%3B%5C%3B%5C%3B%5C%3B%5C%3B%5Ctext%7Bwhere%7D%5C%3B%5C%3B%5Ctext%7Bhead%7D_i%3D%5Ctext%7BAttention%7D%28QW_i%5EQ%2CKW_i%5EK%2CVW_i%5EV%29+%5C%5C)
+
+
+同时，在论文中，作者使用了![[公式]](https://www.zhihu.com/equation?tex=h%3D8)个并行的自注意力模块（8个头）来构建一个注意力层，并且对于每个自注意力模块都限定了![[公式]](https://www.zhihu.com/equation?tex=d_k%3Dd_v%3Dd_%7Bmodel%7D%2Fh%3D64)。**从这里其实可以发现，论文中所使用的多头注意力机制其实就是将一个大的高维单头拆分成了![[公式]](https://www.zhihu.com/equation?tex=h)个多头**。
+
+![preview](https://pic4.zhimg.com/v2-382a68f2a5543f00b7a4a1fd84e29b83_r.jpg)
+
+
+
+根据输入序列X和![[公式]](https://www.zhihu.com/equation?tex=W%5EQ_1%2CW%5EK_1%2CW%5EV_1) 我们就计算得到了![[公式]](https://www.zhihu.com/equation?tex=Q_1%2CK_1%2CV_1)，进一步根据公式![[公式]](https://www.zhihu.com/equation?tex=%281%29)就得到了单个自注意力模块的输出![[公式]](https://www.zhihu.com/equation?tex=Z_1)；同理，根据X和![[公式]](https://www.zhihu.com/equation?tex=W%5EQ_2%2CW%5EK_2%2CW%5EV_2)就得到了另外一个自注意力模块输出![[公式]](https://www.zhihu.com/equation?tex=Z_2)。最后，将![[公式]](https://www.zhihu.com/equation?tex=Z_1%2CZ_2)水平堆叠形成![[公式]](https://www.zhihu.com/equation?tex=Z)，然后再用![[公式]](https://www.zhihu.com/equation?tex=Z)乘以![[公式]](https://www.zhihu.com/equation?tex=W%5EO)便得到了整个多头注意力层的输出。同时，根据图8中的计算过程，还可以得到![[公式]](https://www.zhihu.com/equation?tex=d_q%3Dd_k%3Dd_v)。
+
+
+
+### 单头复制变多头
+
+https://zhuanlan.zhihu.com/p/366592542
+
+```
+class MultiHeadAttention(nn.Module):
+    """ Multi-Head Attention """
+
+    def __init__(self, n_head, d_k_, d_v_, d_k, d_v, d_o):
+        super().__init__()
+
+        self.n_head = n_head
+        self.d_k = d_k
+        self.d_v = d_v
+
+        self.fc_q = nn.Linear(d_k_, n_head * d_k)
+        self.fc_k = nn.Linear(d_k_, n_head * d_k)
+        self.fc_v = nn.Linear(d_v_, n_head * d_v)
+
+        self.attention = ScaledDotProductAttention(scale=np.power(d_k, 0.5))
+
+        self.fc_o = nn.Linear(n_head * d_v, d_o)
+
+    def forward(self, q, k, v, mask=None):
+
+        n_head, d_q, d_k, d_v = self.n_head, self.d_k, self.d_k, self.d_v
+
+        batch, n_q, d_q_ = q.size()
+        batch, n_k, d_k_ = k.size()
+        batch, n_v, d_v_ = v.size()
+
+        q = self.fc_q(q) # 1.单头变多头
+        k = self.fc_k(k)
+        v = self.fc_v(v)
+        q = q.view(batch, n_q, n_head, d_q).permute(2, 0, 1, 3).contiguous().view(-1, n_q, d_q)
+        k = k.view(batch, n_k, n_head, d_k).permute(2, 0, 1, 3).contiguous().view(-1, n_k, d_k)
+        v = v.view(batch, n_v, n_head, d_v).permute(2, 0, 1, 3).contiguous().view(-1, n_v, d_v)
+
+        if mask is not None:
+            mask = mask.repeat(n_head, 1, 1)
+        attn, output = self.attention(q, k, v, mask=mask) # 2.	当成单头注意力求输出
+
+        output = output.view(n_head, batch, n_q, d_v).permute(1, 2, 0, 3).contiguous().view(batch, n_q, -1) # 3.Concat
+        output = self.fc_o(output) # 4.仿射变换得到最终输出
+
+        return attn, output
+
+
+if __name__ == "__main__":
+    n_q, n_k, n_v = 2, 4, 4
+    d_q_, d_k_, d_v_ = 128, 128, 64
+
+    q = torch.randn(batch, n_q, d_q_)
+    k = torch.randn(batch, n_k, d_k_)
+    v = torch.randn(batch, n_v, d_v_)    
+    mask = torch.zeros(batch, n_q, n_k).bool()
+
+    mha = MultiHeadAttention(n_head=8, d_k_=128, d_v_=64, d_k=256, d_v=128, d_o=128)
+    attn, output = mha(q, k, v, mask=mask)
+
+    print(attn.size())
+    print(output.size())
+```
+
+
+
+https://zhuanlan.zhihu.com/p/34781297
+
+获取每个子任务的Q、K、V：
+
+- 通过全连接进行线性变换映射成多个Q、K、V，线性映射得到的结果维度可以不变、也可以减少(类似降维)
+- 或者通过Split对Q、K、V进行划分(分段)
+
+
+
+### 总结
+
+单头变多头，无论是复制还是分割，核心是都要不共享权重，独立计算，才能达到提取不同特征的作用。
+
+![[公式]](https://www.zhihu.com/equation?tex=%5Ctext%7BMultiHead%7D%28Q%2CK%2CV%29%3D%5Ctext%7BConcat%7D%28%5Ctext%7Bhead%7D_1%2C...%2C%5Ctext%7Bhead%7D_h%29W%5EO%5C%5C+%5C%3B%5C%3B%5C%3B%5C%3B%5C%3B%5C%3B%5C%3B%5Ctext%7Bwhere%7D%5C%3B%5C%3B%5Ctext%7Bhead%7D_i%3D%5Ctext%7BAttention%7D%28QW_i%5EQ%2CKW_i%5EK%2CVW_i%5EV%29+%5C%5C)
+
+
+
+
+
+## PoseFormer项目
+
+> 我还想问的是你实现的那篇文章里，多头能提取到什么信息，比如平治的那篇文章多头对应的是多个尺度的块（patch），那你这篇文章的多头对应啥？
+
+### 代码分析
 
 实践的PoseFormer项目中多头数num_head为8
 
@@ -68,7 +194,54 @@
 
 
 
-> 我还想问的是你实现的那篇文章里，多头能提取到什么信息，比如平治的那篇文章多头对应的是多个尺度的块（patch），那你这篇文章的多头对应啥？
+##### 在提取空间特征时
+将32个空间维度特征分成8个head，计算attention值，再将这个8个head值拼接成一个
+
+torch.Size([18560, 25, 3])		  帧，25关节点，xyz
+经过nn.Linear(3, 32)
+torch.Size([18560, 25, 32])		32维空间特征
+将32维度特征分成8份，然后计算attention值
+q,k,v 分别为 torch.Size([18560, 8, 25, 4])
+attn = (q @ k.transpose(-2, -1)) * self.scale
+
+> q 	torch.Size([18560, 8, 25, 4])   
+> k.transpose(-2, -1) 	torch.Size([18560, 8, 4, 25])
+> attn	torch.Size([18560, 8, 25, 25])
+
+attn 再和v做点乘
+x = (attn @ v) # torch.Size([18560, 8, 25, 4])
+x = x.transpose(1, 2) # torch.Size([18560, 25, 8, 4])  
+
+再将这8个head拼接
+x = x.reshape(B, N, C) # torch.Size([18560, 25, 32])
 
 
 
+
+##### 在提取时间特征时
+将800空间维度特征分成8个head，计算attention值，再将这个8个head值拼接成一个
+
+x after sptical transformer		torch.Size([64, 8, 290, 800])
+qkv						   torch.Size([3, 64, 8, 290, 100])
+q,k,v 					       torch.Size([64, 8, 290, 100])
+
+attn = (q @ k.transpose(-2, -1)) * self.scale
+
+attn				             torch.Size([64, 8, 290, 290])
+x = (attn @ v).transpose(1, 2).reshape(B, N, C)		torch.Size([64, 290, 800])
+
+
+
+### 论文观点
+
+PoseFormer 原论文只说会从多种子空间提取关节点信息。
+
+<img src="img/attention/image-20210808160555144.png" alt="image-20210808160555144" style="zoom:80%;" />
+
+attention is all your need 说他们发现这样做好，会提取不同子空间信息。
+![image-20210808160125709](img/attention/image-20210808160125709.png)
+
+
+
+## 总结
+这8个head只是将特征进行分组之后再计算（空间特征和时间特征都是这样）。过程就是“多头注意力机制其实就是将原始的输入序列进行多组的自注意力处理过程；然后再将每一组自注意力的结果拼接起来进行一次线性变换得到最终的输出结果。” 原论文说“多头注意力机制会从多种子空间提取关节点信息”。至于究竟宏观对应什么信息，代码和论文都不得而知。我感觉就像CNN的卷积核，不同卷积核对应不同的信息，但是至于每个卷积核对应何种信息，有时候不得而知。

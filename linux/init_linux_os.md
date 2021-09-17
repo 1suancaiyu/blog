@@ -1,4 +1,4 @@
-# install ssh
+## install ssh
 ```
 apt-get install openssh-server
 
@@ -21,7 +21,10 @@ apt-get install net-tools
 netstat -apn | grep ssh
 ```
 
+
+
 ## frp setup
+
 git clone https://github.com/1suancaiyu/frp
 
 
@@ -46,20 +49,26 @@ echo gnome-session > ~/.xsession
 echo xfce4-session > ~/.xsession
 sudo dpkg-reconfigure gdm3
 ```
+解決xrdp連接後立即閃退問題
+vim /etc/xrdp/startwm.sh
+> test -x /etc/X11/Xsession && exec /etc/X11/Xsession
+> exec /bin/sh /etc/X11/Xsession
+
+替换成startxfce4
 
 
 
+
+
+## source.list
+
+```
 中科大软件软件源
-
 https://mirrors.ustc.edu.cn/repogen/
-
-
-
-
 
 清华源
 https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
-
+```
 
 
 Ubuntu18.04
@@ -80,7 +89,6 @@ deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restri
 
 
 ubuntu18.04  wsx dell
-
 ```
 # deb cdrom:[Ubuntu 18.04.5 LTS _Bionic Beaver_ - Release amd64 (20200806.1)]/ bionic main restricted
 
@@ -137,8 +145,7 @@ deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu bionic stable
 # deb-src [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu bionic stable
 ```
 
-#默认源
-
+默认源
 ```
 
 ## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu
@@ -184,8 +191,7 @@ deb http://security.ubuntu.com/ubuntu/ focal-security multiverse
 
 
 
-#中科大
-
+中科大
 ```
 # ustc
 deb https://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse
