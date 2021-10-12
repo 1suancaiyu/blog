@@ -5,7 +5,7 @@
 
 ![image-20210910011348885](img/stronger_faster/image-20210910011348885.png)
 
-
+![image-20210929105540711](img/efficientgcn/image-20210929105540711.png)
 
 
 

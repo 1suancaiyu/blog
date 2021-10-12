@@ -3,6 +3,10 @@
 anacodna download link
 https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 
+
+miniconda
+https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
 ## general_command 
 ```
 conda create -n your_env_name python=X.X

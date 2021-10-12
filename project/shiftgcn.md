@@ -141,3 +141,18 @@ https://zhuanlan.zhihu.com/p/80041030
 https://zhuanlan.zhihu.com/p/183183514
 
 https://zhuanlan.zhihu.com/p/279617431
+
+
+
+# experiment
+
+## env
+
+
+https://github.com/kchengiva/Shift-GCN/issues/1
+
+
+it can be run in the docker image "pytorch/pytorch:1.1.0-cuda10.0-cudnn7.5-devel"
+https://hub.docker.com/layers/pytorch/pytorch/1.1.0-cuda10.0-cudnn7.5-devel/images/sha256-1be771bff6d18ede7d98c171c577ae8fcbaf6f53b59a3e5fe5cee9e36e188fbc?context=explore
+
+

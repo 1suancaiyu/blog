@@ -58,6 +58,10 @@
 
 # 安装nvidia-docker2
 
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
+
+
+
 此处安装还参考了：[官网指引](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker)
 
 1. Setup the stable repository and the GPG key:

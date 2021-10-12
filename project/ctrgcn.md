@@ -1,6 +1,6 @@
-## 总体
+## network
 
-<img src="img/ICCV2021_channel_wise/image-20210908190517038.png" alt="image-20210908190517038" style="zoom: 200%;" />
+<img src="img/ICCV2021_channel_wise/image-20210908190517038.png" alt="image-20210908190517038" style="zoom:150%;" />
 
 ![image-20210908203401619](img/ICCV2021_channel_wise/image-20210908203401619.png)
 
@@ -12,10 +12,16 @@
 
 
 
+## reslut
+
+<img src="img/ctrgcn/image-20210918085217103.png" alt="image-20210918085217103" style="zoom:50%;" />
+
+<img src="img/ctrgcn/image-20210918085808926.png" alt="image-20210918085808926" style="zoom:50%;" />
 
 
 
-## 分析
+## analysis
+
 ![image-20210908192340821](img/ICCV2021_channel_wise/image-20210908192340821.png)
 
 
@@ -65,9 +71,36 @@ Dynamic method 則會讓模型去對應 Sample 生成具備相依性的鄰接矩
 
 再仔細一點來看這個過程的話，一開始的特徵會先經過 ==φ 和 Ψ 是要進行維度的壓縮==，藉此降低運算量。
 
-若將輸入的配對節點以 ( v_i , v_j ) 表示，對應特徵以 x_i 和 x_j 表示，M(·) 可以有 2 種寫法，第一種是：
+若將輸入的配對節點以 ( v_i , v_j ) 表示，對應特徵以 x_i 和 x_j 表示，M(·) 可以有 2 種寫法，
+
+
+
+- 计算距离
 
 本質上來看 M_1(·)的話，它就是==沿著 Channel 的維度==計算壓縮過後的 x_i 和 x_j 之間的距離，再透過非線性變換來生成 Channel-specific 的節點關聯性。
+
+![image-20210917225420420](img/ctrgcn/image-20210917225420420.png)
+
+```
+x1 = self.tanh(x1.unsqueeze(-1) - x2.unsqueeze(-2))
+```
+
+> paper:
+>
+> where σ(·) is activation function. M1(·) essentially calculates distances between (xi) and φ(xj) along channel dimension and utilizes the nonlinear transformations of these
+> distances as channel-specific topological relationship between vi and vj.  
+
+
+
+
+
+
+
+- MLP 
+
+![image-20210917225357116](img/ctrgcn/image-20210917225357116.png)
+
+
 
 最原始的channel 是如何区分的？
 
@@ -83,7 +116,7 @@ Dynamic method 則會讓模型去對應 Sample 生成具備相依性的鄰接矩
 
 
 
-![image-20210908164918249](img/ICCV2021_channel_wise/image-20210908164918249.png)
+<img src="img/ICCV2021_channel_wise/image-20210908164918249.png" alt="image-20210908164918249" style="zoom:50%;" />
 
 
 
@@ -100,7 +133,7 @@ Dynamic method 則會讓模型去對應 Sample 生成具備相依性的鄰接矩
 
 
 
-## 问题
+## problem
 
 - 这里的A共享邻接矩阵，是如何学习得到的？
 
@@ -118,7 +151,7 @@ Dynamic method 則會讓模型去對應 Sample 生成具備相依性的鄰接矩
 
 
 
-## 改进点
+## refine?
 feature transformation
 用人为构造的与动作表达的有关的特征是不是好一点？
 input 直接用坐标信息还是角度等信息？
@@ -127,8 +160,12 @@ input 直接用坐标信息还是角度等信息？
 
 
 
+## refer to
+https://medium.com/%E4%BA%BA%E5%B7%A5%E6%99%BA%E6%85%A7-%E5%80%92%E5%BA%95%E6%9C%89%E5%A4%9A%E6%99%BA%E6%85%A7/%E8%AB%96%E6%96%87%E9%96%B1%E8%AE%80-iccv-2021-channel-wise-topology-refinement-graph-convolution-for-skeleton-based-action-2e3d85efe1b5
 
-# 实验
+
+
+# experiment
 
 ## error1
 ```
@@ -150,11 +187,92 @@ Traceback (most recent call last):
     self.arg.lr_decay_rate ** np.sum(epoch >= np.array(self.arg.step)))
 AttributeError: 'Namespace' object has no attribute 'lr_decay_rate'
 ```
-make lr_decay_rate 0.001
+give " lr_decay_rate" a value   0.001
+
+## trian
+
+### arg
+python main.py --config config/nturgbd-cross-subject/default.yaml --work-dir work_dir/ntu/csub/ctrgcn/ --device 0
+
+
+## source code reading
+
+
+### A
+
+![image-20210908192340821](img/ICCV2021_channel_wise/image-20210908192340821.png)
+where A 2 RN×N is the ==learnable== shared topology
+
+```
+        if self.adaptive:
+            self.PA = nn.Parameter(torch.from_numpy(A.astype(np.float32)))
+```
+> A kind of Tensor that is to be considered a module parameter.
+Parameters are Tensor subclasses, that have a very special property when used with Module s - when they’re assigned as Module attributes they are ==automatically added to the list of its parameters==, and will appear e.g. in parameters() iterator. Assigning a Tensor doesn’t have such effect. This is because one might want to cache some temporary state, like last hidden state of the RNN, in the model. If there was no such class as Parameter, these temporaries would get registered too.	
+
+
+
+### Z 
+
+![image-20210918092030359](img/ctrgcn/image-20210918092030359.png)
+
+
+
+z = self.convs [i] (x, A[i], self.alpha)
+
+- x torch.Size([128, 3, 64, 25])
+- A[i] (25,25)
+- self.alpha = nn.Parameter(torch.zeros(1))
 
 
 
 
+- convs  &darr;
+```
+ModuleList(
+  (0): CTRGC(
+    (conv1): Conv2d(3, 8, kernel_size=(1, 1), stride=(1, 1))
+    (conv2): Conv2d(3, 8, kernel_size=(1, 1), stride=(1, 1))
+    (conv3): Conv2d(3, 64, kernel_size=(1, 1), stride=(1, 1))
+    (conv4): Conv2d(8, 64, kernel_size=(1, 1), stride=(1, 1))
+    (tanh): Tanh()
+  )
+  (1): CTRGC(
+    (conv1): Conv2d(3, 8, kernel_size=(1, 1), stride=(1, 1))
+    (conv2): Conv2d(3, 8, kernel_size=(1, 1), stride=(1, 1))
+    (conv3): Conv2d(3, 64, kernel_size=(1, 1), stride=(1, 1))
+    (conv4): Conv2d(8, 64, kernel_size=(1, 1), stride=(1, 1))
+    (tanh): Tanh()
+  )
+  (2): CTRGC(
+    (conv1): Conv2d(3, 8, kernel_size=(1, 1), stride=(1, 1))
+    (conv2): Conv2d(3, 8, kernel_size=(1, 1), stride=(1, 1))
+    (conv3): Conv2d(3, 64, kernel_size=(1, 1), stride=(1, 1))
+    (conv4): Conv2d(8, 64, kernel_size=(1, 1), stride=(1, 1))
+    (tanh): Tanh()
+  )
+)
+```
 
 
 
+
+### CTRGC
+```
+x1, x2, x3 = self.conv1(x).mean(-2), self.conv2(x).mean(-2), self.conv3(x)
+x1 = self.tanh(x1.unsqueeze(-1) - x2.unsqueeze(-2))
+x1 = self.conv4(x1) * alpha + (A.unsqueeze(0).unsqueeze(0) if A is not None else 0)  # N,C,V,V  torch.Size([128, 64, 25, 25])
+x1 = torch.einsum('ncuv,nctv->nctu', x1, x3) # ??? wsx torch.Size([128, 64, 64, 25])
+```
+
+
+
+
+### Temporal
+
+<img src="img/ICCV2021_channel_wise/image-20210908164918249.png" alt="image-20210908164918249" style="zoom: 67%;" />
+
+
+
+1*1 conv
+res = self.residual(x)

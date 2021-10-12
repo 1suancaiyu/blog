@@ -177,3 +177,43 @@ DPRL+GCNN
 
 
 
+
+
+## 20210918
+lr 改变记录
+构思实验改进思路
+
+
+
+## 20210924
+
+融合不同通道之间信息的做法？
+
+比较5篇文章，从三个角度（空间，时间，通道，横向对比），进行优化组合
+
+
+
+其他的可以用的创新点：
+
+减少frame的数量
+
+> Sampling. As PoseC3D is built upon 3D convolutional lay-
+> ers, the 3D heatmap volume can be reduced along the tem-
+> poral dimension by sampling a subset of frames. However,
+> researchers tend to sample frames in a short temporal win-
+> dow for 3D-CNNs, such as sampling frames in a 64-frame
+> temporal window as in SlowFast [11].
+
+对数据做一个归一化
+
+
+
+## 20211011
+
+把新论文的观点和模块，加到shift_gcn或者ctrgcn里面
+
+<img src="img/zhou/image-20211011230400978.png" alt="image-20211011230400978" style="zoom:50%;" />
+
+
+
+
