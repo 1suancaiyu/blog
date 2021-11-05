@@ -68,8 +68,8 @@ https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.
 
 ```shell
    distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
-      && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
-      && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+      && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add - \
+      && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | tee /etc/apt/sources.list.d/nvidia-docker.list
 ```
 
 在执行这一步以及后面的操作时遇到问题：“gpg: 找不到有效的 OpenPGP”、“E: 无法定位软件包 nvidia-docker2”。[解决方案](https://blog.csdn.net/weixin_43002433/article/details/108888927)。

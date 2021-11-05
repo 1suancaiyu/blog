@@ -217,3 +217,205 @@ lr 改变记录
 
 
 
+## 20211015
+
+改进shift_gcn
+
+参考TEA论文
+在shift_gcn的基础上加上motion excitation
+
+在shift_gcn的基础上加上MTA
+
+motion excitation 有几种情况
+直接相邻两帧或者间隔几帧
+
+可改进的点：
+1. shift策略(Gate-Shift Networks for Video Action Recognition)
+2. motion excitation 策略
+
+
+
+## 20211028
+tcn，修改 stride
+随机 sampling
+
+
+
+## 20211101
+
+1、昨天说shiftGCN是shift + st-gcn，但是我看了4.2.1的这里，point-wise conv和st-gcn中的spatial conv应该是不一样的意思，不然也不同替代了。
+
+<img src="img/zhou/image-20211101101653979.png" alt="image-20211101101653979" style="zoom:50%;" />
+
+
+
+
+
+
+
+
+
+- Depthwise Separable Convolution_Pytorch
+
+https://github.com/seungjunlee96/Depthwise-Separable-Convolution_Pytorch
+
+
+
+
+
+- SHIFT-GCN
+
+x = torch.einsum('nwc,cd->nwd', (x, self.Linear_weight)).contiguous()   # nt,v,c
+
+gcn 卷积
+
+
+
+
+nn.Conv2d(in_channels, out_channels, 1)   # 点卷积   n, c, t, v = x.size()
+
+Conv2d 1x1卷积，特征升维，维度升为out_channels
+
+
+
+
+
+- ST-GCN
+
+
+
+```
+self.conv = nn.Conv2d(
+    in_channels,
+    out_channels * kernel_size,
+    kernel_size=(t_kernel_size, 1),
+    padding=(t_padding, 0),
+    stride=(t_stride, 1),
+    dilation=(t_dilation, 1),
+    bias=bias)
+```
+
+1x1卷积，特征升维，维度升为out_channels * kernel_size
+
+
+
+x = torch.einsum('nkctv,kvw->nctw', (x, A))
+
+gcn 卷积
+
+
+
+
+
+![image-20211102222815888](img/zhou/image-20211102222815888.png)
+
+
+
+
+
+
+
+gcn 卷积
+
+![image-20211103153058247](img/zhou/image-20211103153058247.png)
+
+
+
+
+
+![image-20211103153814746](img/zhou/image-20211103153814746.png)
+
+
+
+
+
+
+
+参考：
+
+https://www.zhihu.com/question/324532901
+
+https://www.cxyzjd.com/article/qq_44024204/115030327
+
+
+
+
+
+
+
+
+
+
+
+2、看了可分离卷积（mobile conv），point-wise conv应该是对特征图像中的每一点做卷积，kernel size为1 * 1 * n（上一层channel数）。那我的疑问是这篇文章的spatial 的 point-wise conv 和temporal 的point-wise conv的实现有啥不同？ 怎么做到spatial 维度和 temporal 维度上的特征组合？
+
+
+
+
+
+
+
+
+
+
+
+3、目前的也不一定合理，我觉得客房找actionnet，把ME作为一个分支
+
+![image-20211101101750684](img/zhou/image-20211101101750684.png)
+
+
+
+
+
+
+
+
+
+
+
+4、最后的话，这个地方，你选的一种A的方式对吧，是不是那种不太好，需要换另一种？
+
+![image-20211101101809829](img/zhou/image-20211101101809829.png)
+
+
+
+
+
+
+
+
+
+
+
+又想起来一点：actionnet里，先用了shift然后再做ME等模块，actionnet的shift是spatial 还是 temporal上的啊？
+
+
+
+
+
+
+
+
+
+进展：在shift_gcn 项目中加入 motion excitation 模块
+问题：无效果，尝试改进实验和分析原因。
+
+1. 是否是没有稀疏取样造成？尝试稀疏取样，无效果
+2. 是否是spatical conv 不对？尝试gcn，无效果
+3. 尝试自己写计算帧间差模块，进行递增做差，逐渐增加间隔帧数做差。在跑，目前epoch: 85   准确率 87.55%
+4. gcn  spatical conv gcn 写的对吗？待验证
+5. ME 模块是否应该并行？待验证
+
+
+
+
+
+还有一个发现是shift_gcn 也考虑了motion 信息，在进行数据处理的时候，有数据集就是提取前一帧减去后一帧的信息，他这个4s-stream说的是都用了这些信息，但是实际并没有网络同时运用这些全部stream信息，真正的做法是取四种单独的最好结果做平均。
+
+
+
+![image-20211103220924643](img/zhou/image-20211103220924643.png)
+
+
+
+![image-20211103220428073](img/zhou/image-20211103220428073.png)

@@ -3,9 +3,14 @@
 anacodna download link
 https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 
-
 miniconda
 https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh
+
+
+
+
 
 ## general_command 
 ```
@@ -20,6 +25,11 @@ conda config --add channels
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
 ```
 2. vim ~/.condarc
+
+
+
+ustc
+
 ```
 channels:
   - https://mirrors.ustc.edu.cn/anaconda/pkgs/main/
@@ -27,6 +37,26 @@ channels:
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
   - defaults
 show_channel_urls: true
+```
+
+
+tsinghua
+
+```
+channels:
+  - defaults
+show_channel_urls: true
+default_channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+custom_channels:
+  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
 ```
 
 3. update conda 
@@ -60,6 +90,18 @@ conda env export > environment.yml
 
 conda list -e > req.txt
 ```
+
+## create env 
+conda env create --name shiftgcn --file=environment.yml
+
+
+
+```py
+conda env update --file local.yml --prune
+```
+
+
+
 
 ## update env by yml file
 conda env update --file local.yml

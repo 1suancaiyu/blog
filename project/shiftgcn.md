@@ -1,4 +1,8 @@
-# gcn shift conv
+# Shift-GCN
+
+
+
+# Paper
 
 
 
@@ -144,15 +148,222 @@ https://zhuanlan.zhihu.com/p/279617431
 
 
 
-# experiment
+# Experiment
 
 ## env
-
 
 https://github.com/kchengiva/Shift-GCN/issues/1
 
 
+
 it can be run in the docker image "pytorch/pytorch:1.1.0-cuda10.0-cudnn7.5-devel"
+
 https://hub.docker.com/layers/pytorch/pytorch/1.1.0-cuda10.0-cudnn7.5-devel/images/sha256-1be771bff6d18ede7d98c171c577ae8fcbaf6f53b59a3e5fe5cee9e36e188fbc?context=explore
 
 
+
+pytorch/pytorch:0.4.1-cuda9-cudnn7-devel
+
+https://hub.docker.com/layers/pytorch/pytorch/0.4.1-cuda9-cudnn7-devel/images/sha256-3febd5b72fb0b90d646060b64cf2063ea9fe2a2f4b17e06cba675a611adfbaea
+
+
+
+python36/pytorch11/cuda10/g++5.5
+
+```
+# CUDA 10.0
+conda install pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 -c pytorch
+```
+
+
+
+
+
+![image-20211012223549421](img/shiftgcn/image-20211012223549421.png)
+
+
+
+RuntimeError: CuDNN error: CUDNN_STATUS_EXECUTION_FAILED
+
+
+
+### solution
+https://www.matpool.com/
+NVIDIA Tesla K80
+pytorch=1.1.0=py3.6_cuda10.0.130_cudnn7.5.1_0
+
+
+
+sed -i 's/\r$//' filename
+
+
+
+## data_gen
+
+ntu120
+python ntu120_gendata.py --data_path '/wsx/repo/dataset/nturgbd_skeletons_s018_to_s032' --ignored_sample_path 'NTU_RGBD120_samples_with_missing_skeletons.txt' --out_folder '/wsx/repo/dataset/shiftgcn_data/ntu120'
+
+ntu
+
+
+
+## arg
+python main.py --config ./config/nturgbd-cross-subject/train_joint.yaml
+
+
+
+--config ./config/nturgbd-cross-subject/train_joint.yaml --test-batch-size 1 --batch-size 1 --device 0
+
+
+
+python main.py --config ./config/nturgbd-cross-subject/train_joint.yaml --test-batch-size 42 --batch-size 42 --device 0 1
+
+
+
+python main.py --config ./config/nturgbd-cross-subject/train_joint.yaml --test-batch-size 22 --batch-size 22 --device 0
+
+
+
+## train result
+ntu60 xsub
+
+[ Mon Oct 18 22:59:28 2021 ] Eval epoch: 77
+[ Mon Oct 18 23:00:18 2021 ]    Mean test loss of 393 batches: 0.46687665581703186.
+[ Mon Oct 18 23:00:18 2021 ]    Top1: 87.84%
+[ Mon Oct 18 23:00:18 2021 ]    Top5: 97.74%
+
+
+
+ntu120 xsub
+
+[ Tue Oct 19 11:03:24 2021 ] Eval epoch: 90
+[ Tue Oct 19 11:05:08 2021 ]    Mean test loss of 820 batches: 0.9155967235565186.
+[ Tue Oct 19 11:05:09 2021 ]    Top1: 78.05%
+[ Tue Oct 19 11:05:09 2021 ]    Top5: 94.98%
+
+
+
+![image-20211019223041902](img/shiftgcn/image-20211019223041902.png)
+
+
+
+## motion excitation
+
+
+
+add ME block
+
+
+### round 1
+ME_TCN_GCN_unit
+
+```
+self.l1 = TCN_GCN_unit(3, 64, A, residual=False)
+self.l2 = ME_TCN_GCN_unit(64, 64, A)
+self.l3 = ME_TCN_GCN_unit(64, 64, A)
+self.l4 = ME_TCN_GCN_unit(64, 64, A)
+self.l5 = ME_TCN_GCN_unit(64, 128, A, stride=2)
+self.l6 = ME_TCN_GCN_unit(128, 128, A)
+self.l7 = ME_TCN_GCN_unit(128, 128, A)
+self.l8 = ME_TCN_GCN_unit(128, 256, A, stride=2)
+self.l9 = ME_TCN_GCN_unit(256, 256, A)
+self.l10 = ME_TCN_GCN_unit(256, 256, A)
+```
+
+
+
+result
+
+```
+[ Sat Oct 23 23:31:16 2021 ] 	Top1: 87.89%
+[ Sat Oct 23 23:31:16 2021 ] 	Top5: 97.88%
+[ Sat Oct 23 23:31:16 2021 ] Training epoch: 69
+[ Sat Oct 23 23:32:10 2021 ] 	Batch(75/668) done. Loss: 0.0391  lr:0.010000  network_time: 0.0702
+[ Sat Oct 23 23:33:20 2021 ] 	Batch(175/668) done. Loss: 0.0207  lr:0.010000  network_time: 0.0695
+[ Sat Oct 23 23:34:29 2021 ] 	Batch(275/668) done. Loss: 0.0503  lr:0.010000  network_time: 0.0707
+[ Sat Oct 23 23:35:39 2021 ] 	Batch(375/668) done. Loss: 0.0316  lr:0.010000  network_time: 0.0705
+[ Sat Oct 23 23:36:48 2021 ] 	Batch(475/668) done. Loss: 0.0502  lr:0.010000  network_time: 0.0704
+[ Sat Oct 23 23:37:58 2021 ] 	Batch(575/668) done. Loss: 0.0726  lr:0.010000  network_time: 0.0705
+```
+
+
+
+### round2
+
+
+
+
+
+### round3
+
+```
+[ Tue Oct 26 07:16:42 2021 ] Eval epoch: 100
+[ Tue Oct 26 07:17:37 2021 ] 	Mean test loss of 516 batches: 0.48539814352989197.
+[ Tue Oct 26 07:17:37 2021 ] 	Top1: 87.22%
+[ Tue Oct 26 07:17:37 2021 ] 	Top5: 97.65%
+[ Tue Oct 26 07:17:37 2021 ] Training epoch: 101
+[ Tue Oct 26 07:18:23 2021 ] 	Batch(99/1252) done. Loss: 0.0558  lr:0.000100  network_time: 0.0784
+[ Tue Oct 26 07:19:06 2021 ] 	Batch(199/1252) done. Loss: 0.0215  lr:0.000100  network_time: 0.0802
+[ Tue Oct 26 07:19:49 2021 ] 	Batch(299/1252) done. Loss: 0.0533  lr:0.000100  network_time: 0.0787
+[ Tue Oct 26 07:20:32 2021 ] 	Batch(399/1252) done. Loss: 0.0207  lr:0.000100  network_time: 0.0784
+[ Tue Oct 26 07:21:15 2021 ] 	Batch(499/1252) done. Loss: 0.0356  lr:0.000100  network_time: 0.0789
+[ Tue Oct 26 07:21:58 2021 ] 	Batch(599/1252) done. Loss: 0.0206  lr:0.000100  network_time: 0.0799
+[ Tue Oct 26 07:22:41 2021 ] 	Batch(699/1252) done. Loss: 0.0477  lr:0.000100  network_time: 0.0796
+[ Tue Oct 26 07:23:24 2021 ] 	Batch(799/1252) done. Loss: 0.0322  lr:0.000100  network_time: 0.0791
+[ Tue Oct 26 07:24:07 2021 ] 	Batch(899/1252) done. Loss: 0.0212  lr:0.000100  network_time: 0.0792
+[ Tue Oct 26 07:24:50 2021 ] 	Batch(999/1252) done. Loss: 0.0607  lr:0.000100  network_time: 0.0798
+[ Tue Oct 26 07:25:33 2021 ] 	Batch(1099/1252) done. Loss: 0.0991  lr:0.000100  network_time: 0.0768
+[ Tue Oct 26 07:26:16 2021 ] 	Batch(1199/1252) done. Loss: 0.0112  lr:0.000100  network_time: 0.0779
+```
+
+
+
+
+
+[ Wed Oct 27 11:09:00 2021 ] Training epoch: 134
+[ Wed Oct 27 11:09:11 2021 ]    Batch(13/742) done. Loss: 0.0137  lr:0.000100  network_time: 0.0786
+[ Wed Oct 27 11:10:19 2021 ]    Batch(113/742) done. Loss: 0.0240  lr:0.000100  network_time: 0.0788
+[ Wed Oct 27 11:11:27 2021 ]    Batch(213/742) done. Loss: 0.0137  lr:0.000100  network_time: 0.0755
+[ Wed Oct 27 11:12:35 2021 ]    Batch(313/742) done. Loss: 0.0112  lr:0.000100  network_time: 0.0788
+[ Wed Oct 27 11:13:42 2021 ]    Batch(413/742) done. Loss: 0.0256  lr:0.000100  network_time: 0.0784
+[ Wed Oct 27 11:14:50 2021 ]    Batch(513/742) done. Loss: 0.0095  lr:0.000100  network_time: 0.0909
+[ Wed Oct 27 11:15:57 2021 ]    Batch(613/742) done. Loss: 0.0158  lr:0.000100  network_time: 0.0765
+[ Wed Oct 27 11:17:05 2021 ]    Batch(713/742) done. Loss: 0.0192  lr:0.000100  network_time: 0.0770
+[ Wed Oct 27 11:17:24 2021 ] Eval epoch: 134
+[ Wed Oct 27 11:18:10 2021 ]    Mean test loss of 306 batches: 0.4667157828807831.
+[ Wed Oct 27 11:18:10 2021 ]    Top1: 87.77%
+[ Wed Oct 27 11:18:10 2021 ]    Top5: 97.87%
+
+
+
+
+
+```
+def reduce_frame(x, sgement_num):
+    output = []
+    n,c,t,v = x.size()
+    for frame in range(0,t,sgement_num):
+        tmp = x[:,:,frame,:].view(n,c,1,v)
+        output.append(tmp)
+    result = torch.cat(output, dim=2)
+    return result
+```
+
+
+
+
+
+
+
+```
+class depthwise_separable_conv(nn.Module):
+    def __init__(self, nin, nout):
+        super(depthwise_separable_conv, self).__init__()
+        self.depthwise = nn.Conv2d(nin, nin, kernel_size=3, padding=1, groups=nin)
+        self.pointwise = nn.Conv2d(nin, nout, kernel_size=1)
+
+    def forward(self, x):
+        out = self.depthwise(x)
+        out = self.pointwise(out)
+        return out
+```
