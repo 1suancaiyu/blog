@@ -367,3 +367,42 @@ class depthwise_separable_conv(nn.Module):
         out = self.pointwise(out)
         return out
 ```
+
+
+
+
+
+Motion_Excitation_CONV2D
+
+![image-20211108105348868](img/shiftgcn/image-20211108105348868.png)
+
+
+
+
+
+==87.8% ----> 88.2%     0.4 up==
+
+
+
+
+
+## CE Block
+
+![image-20211108105256934](img/shiftgcn/image-20211108105256934.png)
+
+
+
+## 20211113
+
+1.  Shift + ME 串行 各种无效果
+
+2. Shift-GCN  + tcn(ME) ，并行 ，效果提升0.4%
+
+3. Shirft-GCN + tcn（CE）， 并行 ，无效果
+
+4. Shirft-GCN +  CE 并行，无tcn ， 效果提升0.7 %
+5. 将2，4两个有效的方法，串行，Shirft-GCN + ME + CE 像ActionNet一样，无效果
+6. 尝试MTA模型
+
+
+

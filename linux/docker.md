@@ -131,14 +131,14 @@ nvidia-docker run -it -p 端口:22 -p 端口:3389  --ipc=host -v /home/wsx/:/wsx
 ### 2. 使用docker加参数创建
 直接使用docker命令，而非nvidia-docker可以在docker中调用GPU资源(参考https://www.cnblogs.com/chester-cs/p/14444247.html)
 
-```
-sudo docker run -it --gpus all  -p 1122:22 -p 1189:3389  --ipc=host -v /home/wsx/:/wsx -v /home/repo/:/repo --name wsx_ubuntu_py  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  074447744283  /bin/bash
-```
 
 ```
 sudo docker run -it --gpus all  -p [ssh端口]:22  -p  [xrdp端口]:3389  --ipc=host -v  [host主机用户路径]:[docker路径]  -v [共用host路劲]:[docker 路径]  --name [docker名]  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  [镜像id]  /bin/bash
 ```
 
+```
+docker run -it --gpus all  -p 1422:22 -p 1489:3389  --ipc=host -v /home/wsx/:/wsx  --name action_net  -e NVIDIA_DRIVER_CAPABILITIES=compute,utility -e NVIDIA_VISIBLE_DEVICES=all  c062168ccbdd  /bin/bash
+```
 
 # 容器常用命令
 进入容器docker start -i [容器名or ID]

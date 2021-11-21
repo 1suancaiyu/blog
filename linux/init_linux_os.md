@@ -30,31 +30,20 @@ git clone https://github.com/1suancaiyu/frp
 
 ## xrdp setup
 ```
-sudo apt update
-sudo apt install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils
-apt install xrdp
-adduser xrdp ssl-cert
-systemctl status xrdp
+sudo apt update && apt -y install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils xrdp firefox xfce4-terminal && adduser xrdp ssl-cert && service status xrdp
 
 ufw allow 3389
 
-# error: failed to execute default terminal emulator
-apt-get install xfce4-terminal
 update-alternatives --config x-terminal-emulator
 Select xfce4-terminal.
-
-
-sudo update-alternatives --config x-session-manager
-echo gnome-session > ~/.xsession
-echo xfce4-session > ~/.xsession
-sudo dpkg-reconfigure gdm3
 ```
 解決xrdp連接後立即閃退問題
 vim /etc/xrdp/startwm.sh
+
 > test -x /etc/X11/Xsession && exec /etc/X11/Xsession
 > exec /bin/sh /etc/X11/Xsession
 
-替换成startxfce4
+这两行都替换成startxfce4
 
 
 

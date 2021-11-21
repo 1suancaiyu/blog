@@ -383,10 +383,6 @@ https://www.cxyzjd.com/article/qq_44024204/115030327
 
 
 
-
-
-
-
 又想起来一点：actionnet里，先用了shift然后再做ME等模块，actionnet的shift是spatial 还是 temporal上的啊？
 
 
@@ -396,6 +392,8 @@ https://www.cxyzjd.com/article/qq_44024204/115030327
 
 
 
+
+## 20211103
 
 进展：在shift_gcn 项目中加入 motion excitation 模块
 问题：无效果，尝试改进实验和分析原因。
@@ -419,3 +417,47 @@ https://www.cxyzjd.com/article/qq_44024204/115030327
 
 
 ![image-20211103220428073](img/zhou/image-20211103220428073.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+进展：在shift_gcn 项目中加入 motion excitation 模块
+问题：无效果，尝试改进实验和分析原因。
+
+1. 是否是没有稀疏取样造成？尝试稀疏取样，无效果
+
+2. 是否是spatical conv 不对？尝试gcn，无效果
+
+3. 尝试自己写计算帧间差模块，进行递增做差，逐渐增加间隔帧数做差。在跑，目前epoch: 85   准确率 87.55%
+
+4. gcn  spatical conv gcn 写的对吗？待验证
+
+5. ME 模块是否应该并行？待验证
+
+   
+
+还有一个发现是shift_gcn 也考虑了motion 信息，在进行数据处理的时候，有数据集就是提取前一帧减去后一帧的信息，他这个4s-stream说的是都用了这些信息，但是实际并没有网络同时运用这些全部stream信息，真正的做法是取四种单独的最好结果做平均。
+
+![image-20211106081416572](img/zhou/image-20211106081416572.png)
+
+
+
+## 20211106
+
+It's not enough for the accuracy imporved by Motion Excitation block, go on improve it
+
+add CE block (Channel Excitation)
+
+
+
