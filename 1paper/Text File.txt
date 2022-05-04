@@ -1,0 +1,3 @@
+ntu_cs_aagcn_joint-17-16398.pt
+
+recognition -c config/st_gcn/ntu-xsub/train.yaml --work_dir work_dir/mtm_tcn_xsub_200epoch --device 0 1 2 --batch_size 60 --test_batch_size 60 --num_epoch 200 --save_interval 5 --eval_interval 5

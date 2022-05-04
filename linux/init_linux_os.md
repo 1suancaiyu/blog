@@ -30,7 +30,7 @@ git clone https://github.com/1suancaiyu/frp
 
 ## xrdp setup
 ```
-sudo apt update && apt -y install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils xrdp firefox xfce4-terminal && adduser xrdp ssl-cert && service status xrdp
+apt update && apt -y install xfce4 xfce4-goodies xorg dbus-x11 x11-xserver-utils xrdp firefox xfce4-terminal && adduser xrdp ssl-cert && service status xrdp
 
 ufw allow 3389
 

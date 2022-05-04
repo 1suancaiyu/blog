@@ -333,7 +333,8 @@ solution
 ```
 conda install cudatoolkit==10.0.130
 接着安装cudnn，直接使用conda install cudnn安装即可，它自己会选择和cuda版本对应的安装包
-最后安装Pytorch，从官网https://pytorch.org/get-started/locally/可以获得安装命令，记住cuda要选10.0的版本。得到的命令如下：conda install pytorch torchvision cudatoolkit=10.0 -c pytorch
+最后安装Pytorch，从官网https://pytorch.org/get-started/locally/可以获得安装命令，记住cuda要选10.0的版本。得到的命令如下：
+conda install pytorch torchvision cudatoolkit=10.0 -c pytorch
 ```
 error2
 ```
@@ -375,7 +376,7 @@ apt-get install ffmpeg libsm6 libxext6  -y
 bci  gpu
 
 ```
-python main.py recognition -c config/st_gcn/ntu-xsub/train.yaml --work_dir work_dir --device 0
+python main.py recognition -c config/st_gcn/ntu-xsub/train.yaml --work_dir work_dir --device 0 --batch_size 3
 ```
 
 
@@ -398,6 +399,64 @@ python main.py recognition -c config/st_gcn/ntu-xsub/train.yaml --work_dir work_
             n, kc, t, v = x.size()
             x = x.view(n, self.kernel_size, kc//self.kernel_size, t, v) # x: torch.Size([8, 3, 64, 300, 25])
             x = torch.einsum('nkctv,kvw->nctw', (x, A)) # torch.Size([8, 64, 300, 25])
+
+
+
+### 邻接矩阵A的构建
+
+​	代码中采用spatial划分方法，根据列对应的结点跟行对应的结点分别到中心点的距离（相等，列小于行，列大于行）将normalize_adjacency归一化后的矩阵的划分成三个权值矩阵，这三个权值矩阵的shape=(18,18),经过stack方法后堆叠成(3,18,18)
+
+![image-20210822093222676](img/st_gcn/image-20210822093222676.png)
+
+![image-20210822093039741](img/st_gcn/image-20210822093039741.png)
+
+
+
+
+依据不同的关系构造邻接矩阵A，如果有某种相关性A就赋予一个值。
+
+ ST-GCN代码采用，空间构型划分 Spatial configuration partitioning：将节点的1邻域划分为3个子集，第一个子集连接了空间位置上比根节点更远离整个骨架的邻居节点，第二个子集连接了更靠近中心的邻居节点，第三个子集为根节点本身，分别表示了离心运动、向心运动和静止的运动特征。
+
+
+这个A矩阵包含哪三种数据？
+```
+A.append(a_root)
+A.append(a_root + a_close)
+A.append(a_further)
+A = np.stack(A)
+```
+
+![image-20220106174230681](img/st_gcn/image-20220106174230681.png)
+
+
+
+### 爱因斯坦约定求和
+
+D是有i节点的度所组成的对角矩阵
+
+D.shape (25,25)
+
+A: 构造的邻接矩阵
+
+A .shape:（3，25，25）
+
+x: 实际输入数据
+
+x.shape: (n, c, t, v)  (batch_size, channel, frame, joint_number) 
+
+
+
+
+
+![image-20220106175428602](img\st_gcn\image-20220106175428602.png)
+
+![image-20220106180459693](img\st_gcn\image-20220106180459693.png)
+
+
+
+
+
+
 
 
 
@@ -424,37 +483,6 @@ python main.py recognition -c config/st_gcn/ntu-xsub/train.yaml --work_dir work_
             nn.Dropout(dropout, inplace=True),
         )
 ```
-
-
-
-### A矩阵
-
-​	代码中采用spatial划分方法，根据列对应的结点跟行对应的结点分别到中心点的距离（相等，列小于行，列大于行）将normalize_adjacency归一化后的矩阵的划分成三个权值矩阵，这三个权值矩阵的shape=(18,18),经过stack方法后堆叠成(3,18,18)
-
-![image-20210822093222676](img/st_gcn/image-20210822093222676.png)
-
-![image-20210822093039741](img/st_gcn/image-20210822093039741.png)
-
-
-
-这个A矩阵包含哪三种数据？
-
- 
-
-
-
-### torch.einsum
-
-
-	x = torch.einsum('nkctv,kvw->nctw', (x, A))
-
-![20210320204710942](img/st_gcn/20210320204710942.png)
-
-
-
-这个公式可以理解为根据邻接矩阵中的邻接关系做了一次邻接节点间的特征融合，输出就变回了(N*M, C, T, V)的格式。具体的图形化理解可以参考上面的GCN那个图，就是得到的（k*c(也是output_channel),v,t）看成k组的 (c,v,t),每一组的对应通道上同一个t下v方向18个点与A中每一个对应通道下的v方向做点积（这个点积我个人认为可以看作是是一个图卷积，即18个点的2d位置和他们之间相对位置的一个融合，图每个i结点的周围j结点的特征朝着这个i结点流入。另外就是你A矩阵不是把人家周围j个结点分成3组了吗，也就是你A的3维度加起来才能表示出来一个结点周围完整的连接（也可以理解为只有你划分子集K=3的加起来才能还原出i结点周围的所有j结点的集合，只有你把这这A的三通道卷积结果加起来才能实现以i为中心j个周围结点的信息的流入））,因此把这3个通道相加得出output上的一个通道的结果。
-
-
 
 
 
